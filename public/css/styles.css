@@ -20,7 +20,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .workspace { display: flex; flex: 1; overflow: hidden; }
 
 /* LEFT PANEL */
-.panel-left { position: relative; width: 220px; background: #1a1d2e; border-right: 1px solid #2d3148; flex-shrink: 0; overflow: visible; transition: width 0.25s ease; }
+.panel-left { position: relative; width: 260px; background: #1a1d2e; border-right: 1px solid #2d3148; flex-shrink: 0; overflow: visible; transition: width 0.25s ease; }
 .panel-left.collapsed { width: 0; border-right: none; }
 .panel-content { width: 220px; height: 100%; overflow-y: auto; overflow-x: hidden; transition: opacity 0.2s; }
 .panel-left.collapsed .panel-content { opacity: 0; pointer-events: none; }

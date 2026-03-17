@@ -13,7 +13,7 @@ function validateFlow() {
   clearValidationErrors();
 
   if (nodeIds.length === 0) {
-    showToast('Добавьте хотя бы один триггер для старта');
+    showToast('Add at least one trigger to start');
     return false;
   }
 
@@ -24,7 +24,7 @@ function validateFlow() {
     // No trigger at all — mark every node
     nodeIds.forEach(function(id) { invalidIds.push(id); });
     applyInvalid(invalidIds);
-    showToast('⚠ Не найден триггер. Добавьте узел-триггер.');
+    showToast('⚠ No trigger found. Add a trigger node.');
     return false;
   }
 
@@ -56,11 +56,11 @@ function validateFlow() {
   applyInvalid(invalidIds);
 
   if (invalidIds.length > 0) {
-    showToast('⚠ ' + invalidIds.length + ' узл' + plural(invalidIds.length, 'а', 'ов', 'ов') + ' с ошибками соединения');
+    showToast('⚠ ' + invalidIds.length + ' node(s) have connection issues');
     return false;
   }
 
-  showToast('✓ Процесс корректен и готов к активации!');
+  showToast('✓ Flow is valid and ready to activate!');
   return true;
 }
 
@@ -80,7 +80,7 @@ function plural(n, one, two, five) {
 }
 
 function activateFlow() {
-  if (validateFlow()) showToast('🚀 Процесс успешно активирован!');
+  if (validateFlow()) showToast('🚀 Process activated successfully!');
 }
 
 function clearCanvas() {

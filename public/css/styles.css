@@ -138,11 +138,13 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 
 /* SVG arrows */
 #svg-layer { position: absolute; inset: 0; pointer-events: none; overflow: visible; }
-.connection-line { stroke: #7c6aff; stroke-width: 2; fill: none; stroke-dasharray: none; opacity: 0.7; pointer-events: stroke; cursor: pointer; }
-.connection-line:hover { opacity: 1; stroke-width: 3; }
+.conn-group { pointer-events: none; }
+.conn-hit { stroke: transparent; stroke-width: 18; fill: none; pointer-events: stroke; cursor: pointer; }
+.connection-line { stroke: #7c6aff; stroke-width: 2; fill: none; opacity: 0.7; pointer-events: none; transition: opacity 0.15s, stroke-width 0.15s; }
 .connection-line.preview { stroke: #7c6aff; opacity: 0.4; stroke-dasharray: 6,4; }
 .connection-line.yes { stroke: #22c55e; }
 .connection-line.no { stroke: #ef4444; }
+.conn-delete { opacity: 0; pointer-events: all; cursor: pointer; transition: opacity 0.15s; }
 marker path { stroke: none; }
 
 /* Toolbar */

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CRM Process Builder</title>
+<link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <div class="logo">CRM Flow</div>
+    <input class="process-name" value="New Lead Onboarding" />
+    <span style="font-size:11px;color:#64748b;">Draft</span>
+  </div>
+  <div class="header-actions">
+    <button class="btn btn-ghost" onclick="clearCanvas()">Clear</button>
+    <button class="btn btn-ghost" onclick="loadExample()">Load Example</button>
+    <button class="btn btn-primary" onclick="validateFlow()">Validate</button>
+    <button class="btn btn-success" onclick="activateFlow()">Activate</button>
+  </div>
+</div>
+
+<div class="workspace">
+
+  <!-- LEFT PANEL -->
+  <div class="panel-left">
+    <div class="panel-section">
+      <div class="panel-section-title">Triggers</div>
+      <div class="node-item" draggable="true" data-type="trigger" data-subtype="event_lead" ondragstart="onDragStart(event)">
+        <div class="node-icon" style="background:#1e3a5f;">⚡</div>
+        <div class="node-info"><div class="node-name">New Lead</div><div class="node-desc">Lead created</div></div>
+      </div>
+      <div class="node-item" draggable="true" data-type="trigger" data-subtype="event_deal" ondragstart="onDragStart(event)">
+        <div class="node-icon" style="background:#1e3a5f;">💼</div>
+        <div class="node-info"><div class="node-name">Deal Stage</div><div class="node-desc">Stage changed</div></div>
+      </div>
+      <div class="node-item" draggable="true" data-type="trigger" data-subtype="event_form" ondragstart="onDragStart(event)">
+        <div class="node-icon" style="background:#1e3a5f;">📋</div>
+        <div class="node-info"><div class="node-name">Form Submit</div><div class="node-desc">Form filled</div></div>
+      </div>
+      <div class="node-item" draggable="true" data-type="trigger" data-subtype="schedule" ondragstart="onDragStart(event)">
+        <div class="node-icon" style="background:#1e3a5f;">🕐</div>
+        <div class="node-info"><div class="node-name">Schedule</div><div class="node-desc">Cron / date</div></div>
+      </div>
+      <div class="node-item" draggable="true" data-type="trigger" data-subtype="webhook" ondragstart="onDragStart(event)">
+        <div class="node-icon" style="background:#1e3a5f;">🔗</div>
+        <div class="node-info"><div class="node-name">Webhook</div><div class="node-desc">External call</div></div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="panel-section">
+      <div class="panel-section-title">Actions</div>
+      <div class="node-item" draggable="true" data-type="action" data-subtype="send_email" ondragstart="onDragStart(event)">
+        <div class="node-icon" style="background:#2d1e5f;">📧</div>
+        <div class="node-info"><div class="node-name">Send Email</div><div class="node-desc">Email template</div></div>
+      </div>
+      <div class="node-item" draggable="true" data-type="action" data-subtype="send_sms" ondragstart="onDragStart(event)">
+        <div class="node-icon" style="background:#2d1e5f;">💬</div>
+        <div class="node-info"><div class="node-name">Send SMS</div><div class="node-desc">Text message</div></div>
+      </div>
+      <div class="node-item" draggable="true" data-type="action" data-subtype="create_task" ondragstart="onDragStart(event)">
+        <div class="node-icon" style="background:#2d1e5f;">✅</div>
+        <div class="node-info"><div class="node-name">Create Task</div><div class="node-desc">Assign to user</div></div>
+      </div>
+      <div class="node-item" draggable="true" data-type="action" data-subtype="update_field" ondragstart="onDragStart(event)">
+        <div class="node-icon" style="background:#2d1e5f;">✏️</div>
+        <div class="node-info"><div class="node-name">Update Field</div><div class="node-desc">Set CRM field</div></div>
+      </div>
+      <div class="node-item" draggable="true" data-type="action" data-subtype="add_tag" ondragstart="onDragStart(event)">
+        <div class="node-icon" style="background:#2d1e5f;">🏷️</div>
+        <div class="node-info"><div class="node-name">Add Tag</div><div class="node-desc">Tag contact</div></div>
+      </div>
+      <div class="node-item" draggable="true" data-type="action" data-subtype="notify" ondragstart="onDragStart(event)">
+        <div class="node-icon" style="background:#2d1e5f;">🔔</div>
+        <div class="node-info"><div class="node-name">Notify User</div><div class="node-desc">In-app alert</div></div>
+      </div>
+      <div class="node-item" draggable="true" data-type="action" data-subtype="move_stage" ondragstart="onDragStart(event)">
+        <div class="node-icon" style="background:#2d1e5f;">🚀</div>
+        <div class="node-info"><div class="node-name">Move Stage</div><div class="node-desc">Pipeline stage</div></div>
+      </div>
+      <div class="node-item" draggable="true" data-type="action" data-subtype="webhook_call" ondragstart="onDragStart(event)">
+        <div class="node-icon" style="background:#2d1e5f;">⚙️</div>
+        <div class="node-info"><div class="node-name">HTTP Request</div><div class="node-desc">Call API</div></div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="panel-section">
+      <div class="panel-section-title">Logic</div>
+      <div class="node-item" draggable="true" data-type="condition" data-subtype="if_else" ondragstart="onDragStart(event)">
+        <div class="node-icon" style="background:#3b2a0f;">🔀</div>
+        <div class="node-info"><div class="node-name">Condition</div><div class="node-desc">If / Else branch</div></div>
+      </div>
+      <div class="node-item" draggable="true" data-type="wait" data-subtype="wait_time" ondragstart="onDragStart(event)">
+        <div class="node-icon" style="background:#3d1e35;">⏳</div>
+        <div class="node-info"><div class="node-name">Wait / Delay</div><div class="node-desc">Pause flow</div></div>
+      </div>
+      <div class="node-item" draggable="true" data-type="end" data-subtype="end" ondragstart="onDragStart(event)">
+        <div class="node-icon" style="background:#1e3d2f;">🏁</div>
+        <div class="node-info"><div class="node-name">End</div><div class="node-desc">Terminate flow</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CANVAS -->
+  <div class="canvas-wrap" id="canvasWrap"
+    ondragover="event.preventDefault()"
+    ondrop="onDrop(event)"
+    onmousedown="onCanvasMouseDown(event)"
+    onmousemove="onCanvasMouseMove(event)"
+    onmouseup="onCanvasMouseUp(event)">
+    <div class="canvas-bg"></div>
+
+    <div class="toolbar">
+      <button class="tool-btn active" id="tool-select" onclick="setTool('select')">
+        <span>↖</span> Select
+      </button>
+      <button class="tool-btn" id="tool-connect" onclick="setTool('connect')">
+        <span>↗</span> Connect
+      </button>
+      <button class="tool-btn" onclick="autoLayout()">
+        <span>⬛</span> Auto Layout
+      </button>
+    </div>
+
+    <svg id="svg-layer">
+      <defs>
+        <marker id="arrow" markerWidth="12" markerHeight="10" refX="12" refY="5" orient="auto" markerUnits="userSpaceOnUse">
+          <path d="M 0 0 L 12 5 L 0 10 Z" style="fill:#7c6aff" />
+        </marker>
+        <marker id="arrow-yes" markerWidth="12" markerHeight="10" refX="12" refY="5" orient="auto" markerUnits="userSpaceOnUse">
+          <path d="M 0 0 L 12 5 L 0 10 Z" style="fill:#22c55e" />
+        </marker>
+        <marker id="arrow-no" markerWidth="12" markerHeight="10" refX="12" refY="5" orient="auto" markerUnits="userSpaceOnUse">
+          <path d="M 0 0 L 12 5 L 0 10 Z" style="fill:#ef4444" />
+        </marker>
+      </defs>
+    </svg>
+
+    <div id="canvas"></div>
+
+    <div class="canvas-hint" id="canvasHint">
+      <div class="canvas-hint-icon">⬅️</div>
+      <div class="canvas-hint-text">Drag nodes from the left panel<br>to start building your process</div>
+    </div>
+
+    <div class="canvas-controls">
+      <button class="canvas-btn" onclick="zoom(-0.1)">−</button>
+      <div class="zoom-label" id="zoomLabel">100%</div>
+      <button class="canvas-btn" onclick="zoom(0.1)">+</button>
+      <button class="canvas-btn" onclick="resetView()" title="Reset view">⊙</button>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="panel-right" id="panelRight">
+    <div class="panel-right-header">
+      <div class="panel-right-title" id="propTitle">Properties</div>
+      <div class="panel-right-sub" id="propSub">Select a node to configure</div>
+    </div>
+    <div class="panel-right-body" id="propBody">
+      <div class="empty-panel">
+        Click on any node to view and edit its properties here.
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="/js/state.js"></script>
+<script src="/js/nodes.js"></script>
+<script src="/js/connections.js"></script>
+<script src="/js/canvas.js"></script>
+<script src="/js/properties.js"></script>
+<script src="/js/app.js"></script>
+</body>
+</html>

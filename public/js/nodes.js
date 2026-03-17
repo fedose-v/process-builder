@@ -136,25 +136,39 @@ function renderNode(node) {
 }
 
 function getNodeSublabel(node) {
+  var c = node.config;
   if (node.type === 'trigger') {
-    if (node.subtype === 'schedule') return node.config.cron || 'Not configured';
-    if (node.subtype === 'webhook') return node.config.url ? 'URL set' : 'No URL';
-    return node.config.filter || 'Any';
+    if (node.subtype === 'schedule') return c.cron || 'Not configured';
+    if (node.subtype === 'webhook') return 'URL: /hooks/' + node.id;
+    if (node.subtype === 'event_deal') {
+      var from = c.fromStage || 'Any'; var to = c.toStage || 'Any';
+      return from + ' → ' + to;
+    }
+    return 'Source: ' + (c.source || 'Any');
   }
-  if (node.subtype === 'send_email') return node.config.template || 'No template';
-  if (node.subtype === 'create_task') return node.config.assignee || 'Unassigned';
-  if (node.subtype === 'wait_time') return node.config.duration || 'Set duration';
-  if (node.subtype === 'if_else') return node.config.condition || 'Set condition';
-  if (node.subtype === 'move_stage') return node.config.stage || 'Select stage';
+  if (node.subtype === 'send_email') return c.template ? '📄 ' + c.template : 'No template';
+  if (node.subtype === 'send_sms') return c.message ? c.message.substring(0, 28) + (c.message.length > 28 ? '…' : '') : 'No message';
+  if (node.subtype === 'create_task') return c.taskTitle ? '→ ' + c.taskTitle : (c.assignee || 'Unassigned');
+  if (node.subtype === 'update_field') return c.field ? c.field + ' = ' + (c.value || '?') : 'Not configured';
+  if (node.subtype === 'add_tag') return c.tags && c.tags.length ? c.tags.join(', ') : 'No tags selected';
+  if (node.subtype === 'notify') return c.notifyTo || 'Account owner';
+  if (node.subtype === 'move_stage') return c.stage ? '→ ' + c.stage : 'Select stage';
+  if (node.subtype === 'webhook_call') return (c.method || 'POST') + ' ' + (c.url ? c.url.replace(/^https?:\/\//, '').substring(0, 22) + '…' : 'No URL');
+  if (node.subtype === 'wait_time') return (c.durValue || '1') + ' ' + (c.durUnit || 'hours');
+  if (node.subtype === 'if_else') return c.condField ? (c.condField + ' ' + (c.operator || '') + ' ' + (c.condValue || '')) : 'Set condition';
   return '';
 }
 
 function getNodeBody(node) {
+  var c = node.config;
   if (node.type === 'condition') {
-    return '<div class="node-body" style="padding-bottom:18px;font-size:11px;color:#94a3b8;">' + (node.config.condition || 'Click to configure condition') + '</div>';
+    var condText = c.condField
+      ? '<span style="color:#f59e0b">' + c.condField + '</span> ' + (c.operator || '') + ' <span style="color:#e2e8f0">' + (c.condValue || '?') + '</span>'
+      : 'Click to configure condition';
+    return '<div class="node-body" style="padding-bottom:18px;font-size:11px;color:#94a3b8;">' + condText + '</div>';
   }
   if (node.type === 'wait') {
-    return '<div class="node-body" style="font-size:11px;color:#94a3b8;">⏳ ' + (node.config.duration || '1 hour') + '</div>';
+    return '<div class="node-body" style="font-size:11px;color:#94a3b8;">⏳ ' + (c.durValue || '1') + ' ' + (c.durUnit || 'hours') + '</div>';
   }
   return '';
 }

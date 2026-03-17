@@ -148,7 +148,7 @@ function autoLayout() {
   var minSlot = Math.min.apply(null, nodeIds.map(function(id) { return slots[id]; }));
   nodeIds.forEach(function(id) { slots[id] -= minSlot; });
 
-  var nodeW = 220, nodeH = 120, hGap = 80, vGap = 100;
+  var nodeW = 220, nodeH = 90, hGap = 80, vGap = 50;
 
   // Apply positions with smooth CSS transition
   nodeIds.forEach(function(id) {

@@ -94,17 +94,18 @@ function autoLayout() {
   var nodeIds = Object.keys(nodes);
   if (nodeIds.length === 0) return;
 
+  // Build adjacency
   var children = {};
   var parents = {};
   nodeIds.forEach(function(id) { children[id] = []; parents[id] = []; });
   connections.forEach(function(c) {
-    children[c.from].push(c.to);
-    parents[c.to].push(c.from);
+    if (children[c.from].indexOf(c.to) === -1) children[c.from].push(c.to);
+    if (parents[c.to].indexOf(c.from) === -1) parents[c.to].push(c.from);
   });
 
+  // Assign levels via BFS
   var roots = nodeIds.filter(function(id) { return parents[id].length === 0; });
-  if (roots.length === 0) return;
-
+  if (roots.length === 0) roots = [nodeIds[0]];
   var levels = {};
   var queue = roots.slice();
   roots.forEach(function(r) { levels[r] = 0; });
@@ -117,27 +118,63 @@ function autoLayout() {
       }
     });
   }
+  nodeIds.forEach(function(id) { if (levels[id] === undefined) levels[id] = 0; });
 
-  var byLevel = {};
+  // Assign x-slots via DFS: leaves get sequential integer slots,
+  // branch nodes are centered over their children — this prevents
+  // condition branches from overlapping.
+  var slots = {};
+  var slotCounter = 0;
+  var visited = {};
+
+  function assignSlots(id) {
+    if (visited[id]) return;
+    visited[id] = true;
+    var ch = children[id];
+    if (ch.length === 0) {
+      slots[id] = slotCounter++;
+    } else {
+      ch.forEach(function(child) { assignSlots(child); });
+      var childSlots = ch.map(function(c) { return slots[c]; });
+      slots[id] = (Math.min.apply(null, childSlots) + Math.max.apply(null, childSlots)) / 2;
+    }
+  }
+
+  roots.forEach(function(r) { assignSlots(r); });
+  // Handle disconnected nodes
+  nodeIds.forEach(function(id) { if (!visited[id]) { slots[id] = slotCounter++; } });
+
+  // Normalize slots so minimum is 0
+  var minSlot = Math.min.apply(null, nodeIds.map(function(id) { return slots[id]; }));
+  nodeIds.forEach(function(id) { slots[id] -= minSlot; });
+
+  var nodeW = 220, nodeH = 120, hGap = 80, vGap = 100;
+
+  // Apply positions with smooth CSS transition
   nodeIds.forEach(function(id) {
-    var lv = levels[id] !== undefined ? levels[id] : 0;
-    if (!byLevel[lv]) byLevel[lv] = [];
-    byLevel[lv].push(id);
+    var el = document.getElementById(id);
+    if (el) el.style.transition = 'left 0.4s cubic-bezier(0.4,0,0.2,1), top 0.4s cubic-bezier(0.4,0,0.2,1)';
   });
 
-  var nodeW = 200, nodeH = 100, hGap = 40, vGap = 80;
-  Object.entries(byLevel).forEach(function(entry) {
-    var lv = entry[0];
-    var ids = entry[1];
-    var totalW = ids.length * nodeW + (ids.length - 1) * hGap;
-    var startX = -totalW / 2 + 400;
-    ids.forEach(function(id, i) {
-      nodes[id].x = startX + i * (nodeW + hGap);
-      nodes[id].y = 60 + parseInt(lv) * (nodeH + vGap);
-      var el = document.getElementById(id);
-      if (el) { el.style.left = nodes[id].x + 'px'; el.style.top = nodes[id].y + 'px'; }
-    });
+  nodeIds.forEach(function(id) {
+    nodes[id].x = slots[id] * (nodeW + hGap) + 60;
+    nodes[id].y = 60 + levels[id] * (nodeH + vGap);
+    var el = document.getElementById(id);
+    if (el) { el.style.left = nodes[id].x + 'px'; el.style.top = nodes[id].y + 'px'; }
   });
-  renderConnections();
+
+  // Redraw connections during animation, then clean up transition
+  var rafId;
+  function tick() { renderConnections(); rafId = requestAnimationFrame(tick); }
+  rafId = requestAnimationFrame(tick);
+  setTimeout(function() {
+    cancelAnimationFrame(rafId);
+    renderConnections();
+    nodeIds.forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el) el.style.transition = '';
+    });
+  }, 420);
+
   showToast('Layout applied');
 }

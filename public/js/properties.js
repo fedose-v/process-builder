@@ -7,11 +7,14 @@ function selectNode(id) {
     if (prev) prev.classList.remove('selected');
   }
   selectedNode = id;
+  var panel = document.getElementById('panelRight');
   if (id) {
     var el = document.getElementById(id);
     if (el) el.classList.add('selected');
+    if (panel) panel.classList.add('open');
     showProperties(id);
   } else {
+    if (panel) panel.classList.remove('open');
     showProperties(null);
   }
 }

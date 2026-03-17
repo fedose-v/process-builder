@@ -188,8 +188,8 @@ document.addEventListener('DOMContentLoaded', function() {
   canvas = document.getElementById('canvas');
   svgLayer = document.getElementById('svg-layer');
 
-  // Attach wheel listener with passive:false so preventDefault works
   document.getElementById('canvasWrap').addEventListener('wheel', onCanvasWheel, { passive: false });
 
+  initPanel();
   loadExample();
 });

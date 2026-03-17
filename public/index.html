@@ -25,82 +25,39 @@
 <div class="workspace">
 
   <!-- LEFT PANEL -->
-  <div class="panel-left">
-    <div class="panel-section">
-      <div class="panel-section-title">Triggers</div>
-      <div class="node-item" draggable="true" data-type="trigger" data-subtype="event_lead" ondragstart="onDragStart(event)">
-        <div class="node-icon" style="background:#1e3a5f;">⚡</div>
-        <div class="node-info"><div class="node-name">New Lead</div><div class="node-desc">Lead created</div></div>
+  <div class="panel-left" id="panelLeft">
+    <div class="panel-content" id="panelContent">
+
+      <!-- Category view -->
+      <div id="viewCategories">
+        <div class="panel-lib-header">Node Library</div>
+        <div class="panel-section" id="categoryList"></div>
       </div>
-      <div class="node-item" draggable="true" data-type="trigger" data-subtype="event_deal" ondragstart="onDragStart(event)">
-        <div class="node-icon" style="background:#1e3a5f;">💼</div>
-        <div class="node-info"><div class="node-name">Deal Stage</div><div class="node-desc">Stage changed</div></div>
+
+      <!-- Item view (hidden until category selected) -->
+      <div id="viewItems" style="display:none">
+        <div class="panel-back" onclick="showCategories()">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style="flex-shrink:0">
+            <path d="M8 2L4 6L8 10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span id="panelCategoryTitle">Triggers</span>
+        </div>
+        <div class="panel-search-wrap">
+          <svg width="13" height="13" viewBox="0 0 13 13" fill="none" style="position:absolute;left:20px;top:50%;transform:translateY(-50%);pointer-events:none;color:#64748b">
+            <circle cx="5.5" cy="5.5" r="4" stroke="currentColor" stroke-width="1.4"/>
+            <line x1="8.7" y1="8.7" x2="12" y2="12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+          </svg>
+          <input class="panel-search" id="panelSearch" placeholder="Search nodes…" oninput="filterItems(this.value)" />
+        </div>
+        <div class="panel-section" id="itemList"></div>
       </div>
-      <div class="node-item" draggable="true" data-type="trigger" data-subtype="event_form" ondragstart="onDragStart(event)">
-        <div class="node-icon" style="background:#1e3a5f;">📋</div>
-        <div class="node-info"><div class="node-name">Form Submit</div><div class="node-desc">Form filled</div></div>
-      </div>
-      <div class="node-item" draggable="true" data-type="trigger" data-subtype="schedule" ondragstart="onDragStart(event)">
-        <div class="node-icon" style="background:#1e3a5f;">🕐</div>
-        <div class="node-info"><div class="node-name">Schedule</div><div class="node-desc">Cron / date</div></div>
-      </div>
-      <div class="node-item" draggable="true" data-type="trigger" data-subtype="webhook" ondragstart="onDragStart(event)">
-        <div class="node-icon" style="background:#1e3a5f;">🔗</div>
-        <div class="node-info"><div class="node-name">Webhook</div><div class="node-desc">External call</div></div>
-      </div>
+
     </div>
-    <div class="divider"></div>
-    <div class="panel-section">
-      <div class="panel-section-title">Actions</div>
-      <div class="node-item" draggable="true" data-type="action" data-subtype="send_email" ondragstart="onDragStart(event)">
-        <div class="node-icon" style="background:#2d1e5f;">📧</div>
-        <div class="node-info"><div class="node-name">Send Email</div><div class="node-desc">Email template</div></div>
-      </div>
-      <div class="node-item" draggable="true" data-type="action" data-subtype="send_sms" ondragstart="onDragStart(event)">
-        <div class="node-icon" style="background:#2d1e5f;">💬</div>
-        <div class="node-info"><div class="node-name">Send SMS</div><div class="node-desc">Text message</div></div>
-      </div>
-      <div class="node-item" draggable="true" data-type="action" data-subtype="create_task" ondragstart="onDragStart(event)">
-        <div class="node-icon" style="background:#2d1e5f;">✅</div>
-        <div class="node-info"><div class="node-name">Create Task</div><div class="node-desc">Assign to user</div></div>
-      </div>
-      <div class="node-item" draggable="true" data-type="action" data-subtype="update_field" ondragstart="onDragStart(event)">
-        <div class="node-icon" style="background:#2d1e5f;">✏️</div>
-        <div class="node-info"><div class="node-name">Update Field</div><div class="node-desc">Set CRM field</div></div>
-      </div>
-      <div class="node-item" draggable="true" data-type="action" data-subtype="add_tag" ondragstart="onDragStart(event)">
-        <div class="node-icon" style="background:#2d1e5f;">🏷️</div>
-        <div class="node-info"><div class="node-name">Add Tag</div><div class="node-desc">Tag contact</div></div>
-      </div>
-      <div class="node-item" draggable="true" data-type="action" data-subtype="notify" ondragstart="onDragStart(event)">
-        <div class="node-icon" style="background:#2d1e5f;">🔔</div>
-        <div class="node-info"><div class="node-name">Notify User</div><div class="node-desc">In-app alert</div></div>
-      </div>
-      <div class="node-item" draggable="true" data-type="action" data-subtype="move_stage" ondragstart="onDragStart(event)">
-        <div class="node-icon" style="background:#2d1e5f;">🚀</div>
-        <div class="node-info"><div class="node-name">Move Stage</div><div class="node-desc">Pipeline stage</div></div>
-      </div>
-      <div class="node-item" draggable="true" data-type="action" data-subtype="webhook_call" ondragstart="onDragStart(event)">
-        <div class="node-icon" style="background:#2d1e5f;">⚙️</div>
-        <div class="node-info"><div class="node-name">HTTP Request</div><div class="node-desc">Call API</div></div>
-      </div>
-    </div>
-    <div class="divider"></div>
-    <div class="panel-section">
-      <div class="panel-section-title">Logic</div>
-      <div class="node-item" draggable="true" data-type="condition" data-subtype="if_else" ondragstart="onDragStart(event)">
-        <div class="node-icon" style="background:#3b2a0f;">🔀</div>
-        <div class="node-info"><div class="node-name">Condition</div><div class="node-desc">If / Else branch</div></div>
-      </div>
-      <div class="node-item" draggable="true" data-type="wait" data-subtype="wait_time" ondragstart="onDragStart(event)">
-        <div class="node-icon" style="background:#3d1e35;">⏳</div>
-        <div class="node-info"><div class="node-name">Wait / Delay</div><div class="node-desc">Pause flow</div></div>
-      </div>
-      <div class="node-item" draggable="true" data-type="end" data-subtype="end" ondragstart="onDragStart(event)">
-        <div class="node-icon" style="background:#1e3d2f;">🏁</div>
-        <div class="node-info"><div class="node-name">End</div><div class="node-desc">Terminate flow</div></div>
-      </div>
-    </div>
+    <button class="panel-toggle" id="panelToggle" onclick="togglePanel()" title="Toggle panel">
+      <svg id="panelToggleIcon" width="10" height="10" viewBox="0 0 10 16" fill="none">
+        <path d="M7 2L2 8L7 14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
   </div>
 
   <!-- CANVAS -->
@@ -184,6 +141,7 @@
 <script src="/js/connections.js"></script>
 <script src="/js/canvas.js"></script>
 <script src="/js/properties.js"></script>
+<script src="/js/panel.js"></script>
 <script src="/js/app.js"></script>
 </body>
 </html>

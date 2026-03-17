@@ -90,10 +90,43 @@ document.addEventListener('keydown', function(e) {
 });
 
 // ═══════════════════════════════════════════════════════════
+// CTRL + WHEEL ZOOM
+// ═══════════════════════════════════════════════════════════
+function onCanvasWheel(e) {
+  if (!e.ctrlKey) return;
+  e.preventDefault();
+
+  var wrap = document.getElementById('canvasWrap');
+  var rect = wrap.getBoundingClientRect();
+
+  // Cursor position relative to canvasWrap
+  var cursorX = e.clientX - rect.left;
+  var cursorY = e.clientY - rect.top;
+
+  var delta = e.deltaY < 0 ? 0.1 : -0.1;
+  var newScale = Math.min(2, Math.max(0.3, scale + delta));
+  if (newScale === scale) return;
+
+  // Adjust pan so the point under the cursor stays fixed:
+  // worldX = (cursorX - panX) / scale  →  keep worldX constant after scale change
+  panX = cursorX - (cursorX - panX) * newScale / scale;
+  panY = cursorY - (cursorY - panY) * newScale / scale;
+  scale = newScale;
+
+  document.getElementById('zoomLabel').textContent = Math.round(scale * 100) + '%';
+  updateCanvas();
+  renderConnections();
+}
+
+// ═══════════════════════════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════════════════════════
 document.addEventListener('DOMContentLoaded', function() {
   canvas = document.getElementById('canvas');
   svgLayer = document.getElementById('svg-layer');
+
+  // Attach wheel listener with passive:false so preventDefault works
+  document.getElementById('canvasWrap').addEventListener('wheel', onCanvasWheel, { passive: false });
+
   loadExample();
 });

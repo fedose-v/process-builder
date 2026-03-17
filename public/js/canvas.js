@@ -150,6 +150,12 @@ function autoLayout() {
 
   var nodeW = 220, nodeH = 90, hGap = 80, vGap = 50;
 
+  // Center the layout horizontally: compute startX so the layout's
+  // midpoint lands at x=400 (typical canvas center).
+  // Layout spans: startX … startX + maxSlot*(nodeW+hGap) + nodeW
+  var maxSlot = Math.max.apply(null, nodeIds.map(function(id) { return slots[id]; }));
+  var startX = Math.max(40, 400 - (maxSlot * (nodeW + hGap) + nodeW) / 2);
+
   // Apply positions with smooth CSS transition
   nodeIds.forEach(function(id) {
     var el = document.getElementById(id);
@@ -157,7 +163,7 @@ function autoLayout() {
   });
 
   nodeIds.forEach(function(id) {
-    nodes[id].x = slots[id] * (nodeW + hGap) + 60;
+    nodes[id].x = slots[id] * (nodeW + hGap) + startX;
     nodes[id].y = 60 + levels[id] * (nodeH + vGap);
     var el = document.getElementById(id);
     if (el) { el.style.left = nodes[id].x + 'px'; el.style.top = nodes[id].y + 'px'; }

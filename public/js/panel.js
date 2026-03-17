@@ -46,8 +46,16 @@ function togglePanel() {
   var panel = document.getElementById('panelLeft');
   var icon  = document.getElementById('panelToggleIcon');
   panel.classList.toggle('collapsed', panelCollapsed);
-  // Flip the chevron direction
   icon.style.transform = panelCollapsed ? 'scaleX(-1)' : '';
+}
+
+// ═══════════════════════════════════════════════════════════
+// VIEW SWITCHING HELPERS
+// ═══════════════════════════════════════════════════════════
+function setView(name) {
+  document.getElementById('viewCategories').style.display = name === 'categories' ? '' : 'none';
+  document.getElementById('viewItems').style.display      = name === 'items'      ? '' : 'none';
+  document.getElementById('viewSearch').style.display     = name === 'search'     ? '' : 'none';
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -55,8 +63,8 @@ function togglePanel() {
 // ═══════════════════════════════════════════════════════════
 function showCategories() {
   currentCategory = null;
-  document.getElementById('viewCategories').style.display = '';
-  document.getElementById('viewItems').style.display = 'none';
+  document.getElementById('panelSearch').value = '';
+  setView('categories');
 }
 
 function renderCategories() {
@@ -85,20 +93,10 @@ function showCategory(categoryId) {
   }
   if (!cat) return;
   currentCategory = cat;
-  document.getElementById('viewCategories').style.display = 'none';
-  document.getElementById('viewItems').style.display = '';
   document.getElementById('panelCategoryTitle').textContent = cat.label;
   document.getElementById('panelSearch').value = '';
+  setView('items');
   renderItems(cat.items);
-}
-
-function filterItems(query) {
-  if (!currentCategory) return;
-  var q = query.toLowerCase().trim();
-  var filtered = !q ? currentCategory.items : currentCategory.items.filter(function(item) {
-    return item.name.toLowerCase().indexOf(q) !== -1 || item.desc.toLowerCase().indexOf(q) !== -1;
-  });
-  renderItems(filtered);
 }
 
 function renderItems(items) {
@@ -108,15 +106,62 @@ function renderItems(items) {
     return;
   }
   list.innerHTML = items.map(function(item) {
-    return '<div class="node-item" draggable="true"' +
-      ' data-type="' + item.type + '" data-subtype="' + item.subtype + '"' +
-      ' ondragstart="onDragStart(event)">' +
-      '<div class="node-icon" style="background:' + item.bg + '">' + item.icon + '</div>' +
-      '<div class="node-info">' +
-        '<div class="node-name">' + item.name + '</div>' +
-        '<div class="node-desc">' + item.desc + '</div>' +
+    return buildItemHTML(item);
+  }).join('');
+}
+
+function buildItemHTML(item) {
+  return '<div class="node-item" draggable="true"' +
+    ' data-type="' + item.type + '" data-subtype="' + item.subtype + '"' +
+    ' ondragstart="onDragStart(event)">' +
+    '<div class="node-icon" style="background:' + item.bg + '">' + item.icon + '</div>' +
+    '<div class="node-info">' +
+      '<div class="node-name">' + item.name + '</div>' +
+      '<div class="node-desc">' + item.desc + '</div>' +
+    '</div>' +
+  '</div>';
+}
+
+// ═══════════════════════════════════════════════════════════
+// GLOBAL SEARCH
+// ═══════════════════════════════════════════════════════════
+function onPanelSearch(query) {
+  var q = query.toLowerCase().trim();
+
+  if (!q) {
+    // Restore the previous view
+    if (currentCategory) {
+      setView('items');
+      renderItems(currentCategory.items);
+    } else {
+      setView('categories');
+    }
+    return;
+  }
+
+  // Search across all categories
+  var groups = [];
+  PANEL_CATEGORIES.forEach(function(cat) {
+    var matched = cat.items.filter(function(item) {
+      return item.name.toLowerCase().indexOf(q) !== -1 ||
+             item.desc.toLowerCase().indexOf(q) !== -1;
+    });
+    if (matched.length > 0) groups.push({ cat: cat, items: matched });
+  });
+
+  setView('search');
+  var list = document.getElementById('searchList');
+  if (groups.length === 0) {
+    list.innerHTML = '<div class="panel-empty">No nodes found</div>';
+    return;
+  }
+
+  list.innerHTML = groups.map(function(g) {
+    return '<div class="search-section-label" style="color:' + g.cat.color + '">' +
+        '<span class="search-section-icon" style="background:' + g.cat.bg + ';color:' + g.cat.color + '">' + g.cat.icon + '</span>' +
+        g.cat.label +
       '</div>' +
-    '</div>';
+      g.items.map(function(item) { return buildItemHTML(item); }).join('');
   }).join('');
 }
 

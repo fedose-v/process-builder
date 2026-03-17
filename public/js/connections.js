@@ -50,10 +50,55 @@ function cubicPath(x1, y1, x2, y2) {
   return 'M ' + x1 + ' ' + y1 + ' C ' + x1 + ' ' + (y1 + cp) + ', ' + x2 + ' ' + (y2 - cp) + ', ' + x2 + ' ' + y2;
 }
 
+// Sample 24 points along the cubic bezier in canvasWrap-space
+function sampleBezier(x1, y1, x2, y2) {
+  var dy = Math.abs(y2 - y1);
+  var cp = Math.max(60, dy * 0.5);
+  var pts = [];
+  for (var i = 0; i <= 24; i++) {
+    var t = i / 24;
+    var u = 1 - t;
+    pts.push({
+      x: u*u*u*x1 + 3*u*u*t*x1     + 3*u*t*t*x2     + t*t*t*x2,
+      y: u*u*u*y1 + 3*u*u*t*(y1+cp) + 3*u*t*t*(y2-cp) + t*t*t*y2
+    });
+  }
+  return pts;
+}
+
+// Per-connection hit data for proximity hover detection
+var connHitData = [];
+var connHoverListenerAdded = false;
+
+function onConnHover(e) {
+  var wrap = document.getElementById('canvasWrap');
+  var rect = wrap.getBoundingClientRect();
+  var mx = e.clientX - rect.left;
+  var my = e.clientY - rect.top;
+  var THRESHOLD = 12; // px in screen/canvasWrap space
+
+  connHitData.forEach(function(h) {
+    var near = h.points.some(function(p) {
+      var dx = p.x - mx, dy = p.y - my;
+      return dx * dx + dy * dy <= THRESHOLD * THRESHOLD;
+    });
+    h.btn.style.opacity = near ? '1' : '0';
+    if (near) h.line.classList.add('conn-highlight');
+    else h.line.classList.remove('conn-highlight');
+  });
+}
+
 function renderConnections() {
   // Clear old SVG paths and HTML delete buttons
   svgLayer.querySelectorAll('.conn-group, .connection-line:not(.preview)').forEach(function(e) { e.remove(); });
   canvas.querySelectorAll('.conn-del-btn').forEach(function(e) { e.remove(); });
+  connHitData = [];
+
+  // Attach proximity hover listener once
+  if (!connHoverListenerAdded) {
+    document.getElementById('canvasWrap').addEventListener('mousemove', onConnHover);
+    connHoverListenerAdded = true;
+  }
 
   connections.forEach(function(conn, i) {
     var fromPort = conn.fromPort || 'out';
@@ -96,12 +141,11 @@ function renderConnections() {
     btn.title = 'Remove connection';
     btn.textContent = '×';
 
-    // Highlight SVG line on button hover
     btn.addEventListener('mouseenter', function() {
       line.classList.add('conn-highlight');
     });
     btn.addEventListener('mouseleave', function() {
-      line.classList.remove('conn-highlight');
+      // keep highlight while cursor is near the line
     });
 
     btn.addEventListener('click', function(e) {
@@ -111,5 +155,12 @@ function renderConnections() {
     });
 
     canvas.appendChild(btn);
+
+    // Register for proximity detection
+    connHitData.push({
+      btn: btn,
+      line: line,
+      points: sampleBezier(from.x, from.y, to.x, to.y)
+    });
   });
 }

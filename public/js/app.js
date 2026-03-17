@@ -1,23 +1,86 @@
 // ═══════════════════════════════════════════════════════════
 // VALIDATE / ACTIVATE
 // ═══════════════════════════════════════════════════════════
+function clearValidationErrors() {
+  Object.keys(nodes).forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) el.classList.remove('invalid');
+  });
+}
+
 function validateFlow() {
   var nodeIds = Object.keys(nodes);
-  if (nodeIds.length === 0) { showToast('Add at least one trigger to start'); return; }
+  clearValidationErrors();
+
+  if (nodeIds.length === 0) {
+    showToast('Добавьте хотя бы один триггер для старта');
+    return false;
+  }
+
+  var invalidIds = [];
+
   var triggers = nodeIds.filter(function(id) { return nodes[id].type === 'trigger'; });
-  if (triggers.length === 0) { showToast('⚠ No trigger found. Add a trigger node.'); return; }
-  var isolated = nodeIds.filter(function(id) {
-    var hasOut = connections.some(function(c) { return c.from === id; });
-    var hasIn = connections.some(function(c) { return c.to === id; });
-    return !hasOut && !hasIn && nodes[id].type !== 'trigger';
+  if (triggers.length === 0) {
+    // No trigger at all — mark every node
+    nodeIds.forEach(function(id) { invalidIds.push(id); });
+    applyInvalid(invalidIds);
+    showToast('⚠ Не найден триггер. Добавьте узел-триггер.');
+    return false;
+  }
+
+  nodeIds.forEach(function(id) {
+    var node = nodes[id];
+    var hasIn     = connections.some(function(c) { return c.to === id; });
+    var hasOut    = connections.some(function(c) { return c.from === id; });
+    var hasOutYes = connections.some(function(c) { return c.from === id && c.fromPort === 'out_yes'; });
+    var hasOutNo  = connections.some(function(c) { return c.from === id && c.fromPort === 'out_no'; });
+
+    var bad = false;
+    if (node.type === 'trigger') {
+      // Trigger must have at least one outgoing connection
+      bad = !hasOut;
+    } else if (node.type === 'end') {
+      // End must have at least one incoming connection
+      bad = !hasIn;
+    } else if (node.type === 'condition') {
+      // Condition needs incoming + both Yes and No outputs
+      bad = !hasIn || !hasOutYes || !hasOutNo;
+    } else {
+      // All other nodes need both incoming and outgoing
+      bad = !hasIn || !hasOut;
+    }
+
+    if (bad) invalidIds.push(id);
   });
-  if (isolated.length > 0) { showToast('⚠ ' + isolated.length + ' disconnected node(s) found'); return; }
-  showToast('✓ Flow is valid and ready to activate!');
+
+  applyInvalid(invalidIds);
+
+  if (invalidIds.length > 0) {
+    showToast('⚠ ' + invalidIds.length + ' узл' + plural(invalidIds.length, 'а', 'ов', 'ов') + ' с ошибками соединения');
+    return false;
+  }
+
+  showToast('✓ Процесс корректен и готов к активации!');
+  return true;
+}
+
+function applyInvalid(ids) {
+  ids.forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) el.classList.add('invalid');
+  });
+}
+
+function plural(n, one, two, five) {
+  var mod10 = n % 10, mod100 = n % 100;
+  if (mod100 >= 11 && mod100 <= 14) return five;
+  if (mod10 === 1) return one;
+  if (mod10 >= 2 && mod10 <= 4) return two;
+  return five;
 }
 
 function activateFlow() {
-  validateFlow();
-  showToast('🚀 Process activated successfully!');
+  if (validateFlow()) showToast('🚀 Процесс успешно активирован!');
 }
 
 function clearCanvas() {

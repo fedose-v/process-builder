@@ -1,14 +1,14 @@
 // ═══════════════════════════════════════════════════════════
 // VALIDATE / ACTIVATE
 // ═══════════════════════════════════════════════════════════
-function clearValidationErrors() {
+function clearValidationErrors(): void {
   Object.keys(nodes).forEach(function(id) {
     var el = document.getElementById(id);
     if (el) el.classList.remove('invalid');
   });
 }
 
-function validateFlow() {
+function validateFlow(): boolean {
   var nodeIds = Object.keys(nodes);
   clearValidationErrors();
 
@@ -17,7 +17,7 @@ function validateFlow() {
     return false;
   }
 
-  var invalidIds = [];
+  var invalidIds: string[] = [];
 
   var triggers = nodeIds.filter(function(id) { return nodes[id].type === 'trigger'; });
   if (triggers.length === 0) {
@@ -64,14 +64,14 @@ function validateFlow() {
   return true;
 }
 
-function applyInvalid(ids) {
+function applyInvalid(ids: string[]): void {
   ids.forEach(function(id) {
     var el = document.getElementById(id);
     if (el) el.classList.add('invalid');
   });
 }
 
-function plural(n, one, two, five) {
+function plural(n: number, one: string, two: string, five: string): string {
   var mod10 = n % 10, mod100 = n % 100;
   if (mod100 >= 11 && mod100 <= 14) return five;
   if (mod10 === 1) return one;
@@ -79,11 +79,11 @@ function plural(n, one, two, five) {
   return five;
 }
 
-function activateFlow() {
+function activateFlow(): void {
   if (validateFlow()) showToast('🚀 Process activated successfully!');
 }
 
-function clearCanvas() {
+function clearCanvas(): void {
   if (Object.keys(nodes).length === 0) return;
   if (!confirm('Clear the entire canvas?')) return;
   Object.keys(nodes).forEach(function(id) {
@@ -95,15 +95,15 @@ function clearCanvas() {
   nodeCounter = 0;
   svgLayer.querySelectorAll('.connection-line').forEach(function(e) { e.remove(); });
   selectNode(null);
-  document.getElementById('canvasHint').classList.remove('hidden');
+  document.getElementById('canvasHint')!.classList.remove('hidden');
 }
 
 // ═══════════════════════════════════════════════════════════
 // EXAMPLE FLOW
 // ═══════════════════════════════════════════════════════════
-function loadExample() {
+function loadExample(): void {
   clearCanvas();
-  document.getElementById('canvasHint').classList.add('hidden');
+  document.getElementById('canvasHint')!.classList.add('hidden');
 
   var t1 = createNode('trigger',   'event_lead',  300,  40,  { label: 'New Lead Arrives' });
   var a1 = createNode('action',    'send_email',  300,  180, { label: 'Send Welcome Email', template: 'Welcome Email' });
@@ -133,8 +133,8 @@ function loadExample() {
 // ═══════════════════════════════════════════════════════════
 // TOAST
 // ═══════════════════════════════════════════════════════════
-function showToast(msg) {
-  var t = document.getElementById('toast');
+function showToast(msg: string): void {
+  var t = document.getElementById('toast')!;
   t.textContent = msg;
   t.classList.add('show');
   setTimeout(function() { t.classList.remove('show'); }, 2800);
@@ -143,9 +143,9 @@ function showToast(msg) {
 // ═══════════════════════════════════════════════════════════
 // KEYBOARD
 // ═══════════════════════════════════════════════════════════
-document.addEventListener('keydown', function(e) {
+document.addEventListener('keydown', function(e: KeyboardEvent) {
   if (e.key === 'Delete' || e.key === 'Backspace') {
-    if (selectedNode && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+    if (selectedNode && (document.activeElement as HTMLElement).tagName !== 'INPUT' && (document.activeElement as HTMLElement).tagName !== 'TEXTAREA') {
       deleteNode(selectedNode);
     }
   }
@@ -155,11 +155,11 @@ document.addEventListener('keydown', function(e) {
 // ═══════════════════════════════════════════════════════════
 // CTRL + WHEEL ZOOM
 // ═══════════════════════════════════════════════════════════
-function onCanvasWheel(e) {
+function onCanvasWheel(e: WheelEvent): void {
   if (!e.ctrlKey) return;
   e.preventDefault();
 
-  var wrap = document.getElementById('canvasWrap');
+  var wrap = document.getElementById('canvasWrap')!;
   var rect = wrap.getBoundingClientRect();
 
   // Cursor position relative to canvasWrap
@@ -176,7 +176,7 @@ function onCanvasWheel(e) {
   panY = cursorY - (cursorY - panY) * newScale / scale;
   scale = newScale;
 
-  document.getElementById('zoomLabel').textContent = Math.round(scale * 100) + '%';
+  document.getElementById('zoomLabel')!.textContent = Math.round(scale * 100) + '%';
   updateCanvas();
   renderConnections();
 }
@@ -185,10 +185,10 @@ function onCanvasWheel(e) {
 // INIT
 // ═══════════════════════════════════════════════════════════
 document.addEventListener('DOMContentLoaded', function() {
-  canvas = document.getElementById('canvas');
-  svgLayer = document.getElementById('svg-layer');
+  canvas = document.getElementById('canvas') as HTMLDivElement;
+  svgLayer = document.getElementById('svg-layer') as unknown as SVGSVGElement;
 
-  document.getElementById('canvasWrap').addEventListener('wheel', onCanvasWheel, { passive: false });
+  document.getElementById('canvasWrap')!.addEventListener('wheel', onCanvasWheel, { passive: false });
 
   initPanel();
   loadExample();

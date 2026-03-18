@@ -1,7 +1,7 @@
 // ═══════════════════════════════════════════════════════════
 // SELECT / PROPERTIES
 // ═══════════════════════════════════════════════════════════
-function selectNode(id) {
+function selectNode(id: string | null): void {
   if (selectedNode) {
     var prev = document.getElementById(selectedNode);
     if (prev) prev.classList.remove('selected');
@@ -19,10 +19,10 @@ function selectNode(id) {
   }
 }
 
-function showProperties(id) {
-  var title = document.getElementById('propTitle');
-  var sub = document.getElementById('propSub');
-  var body = document.getElementById('propBody');
+function showProperties(id: string | null): void {
+  var title = document.getElementById('propTitle')!;
+  var sub = document.getElementById('propSub')!;
+  var body = document.getElementById('propBody')!;
   if (!id) {
     title.textContent = 'Properties';
     sub.textContent = 'Select a node to configure';
@@ -37,7 +37,7 @@ function showProperties(id) {
 }
 
 // Build a <select> with current value pre-selected
-function buildSelect(opts, cur, nodeId, key) {
+function buildSelect(opts: Array<string | { value: string; label: string }>, cur: string, nodeId: string, key: string): string {
   var handler = 'onchange="updateConfig(\'' + nodeId + '\',\'' + key + '\',this.value)"';
   var options = opts.map(function(o) {
     var v = typeof o === 'object' ? o.value : o;
@@ -48,20 +48,20 @@ function buildSelect(opts, cur, nodeId, key) {
 }
 
 // Build a text input that updates in real-time without losing focus
-function buildInput(val, placeholder, nodeId, key, extra) {
+function buildInput(val: string | undefined, placeholder: string, nodeId: string, key: string, extra?: string): string {
   extra = extra || '';
   return '<input class="prop-input" value="' + (val || '').replace(/"/g, '&quot;') + '" placeholder="' + placeholder + '" ' + extra +
     ' oninput="updateConfigSilent(\'' + nodeId + '\',\'' + key + '\',this.value)" />';
 }
 
 // Build a textarea that updates in real-time without losing focus
-function buildTextarea(val, placeholder, nodeId, key, extra) {
+function buildTextarea(val: string | undefined, placeholder: string, nodeId: string, key: string, extra?: string): string {
   extra = extra || '';
   return '<textarea class="prop-textarea" ' + extra + ' placeholder="' + placeholder + '"' +
     ' oninput="updateConfigSilent(\'' + nodeId + '\',\'' + key + '\',this.value)">' + (val || '') + '</textarea>';
 }
 
-function buildPropsForm(node) {
+function buildPropsForm(node: FlowNode): string {
   var id = node.id;
   var c = node.config;
   var html = '';
@@ -218,9 +218,9 @@ function buildPropsForm(node) {
 }
 
 // Full re-render (for selects, tags) — rebuilds node card + properties panel
-function updateConfig(nodeId, key, value) {
+function updateConfig(nodeId: string, key: string, value: string): void {
   if (!nodes[nodeId]) return;
-  nodes[nodeId].config[key] = value;
+  nodes[nodeId].config[key as keyof NodeConfig] = value as any;
   var el = document.getElementById(nodeId);
   if (el) {
     el.remove();
@@ -233,9 +233,9 @@ function updateConfig(nodeId, key, value) {
 }
 
 // Silent update (for text inputs / textareas) — updates node card only, preserves focus
-function updateConfigSilent(nodeId, key, value) {
+function updateConfigSilent(nodeId: string, key: string, value: string): void {
   if (!nodes[nodeId]) return;
-  nodes[nodeId].config[key] = value;
+  nodes[nodeId].config[key as keyof NodeConfig] = value as any;
   var el = document.getElementById(nodeId);
   if (el) {
     el.remove();
@@ -247,7 +247,7 @@ function updateConfigSilent(nodeId, key, value) {
 }
 
 // Toggle tag in add_tag node
-function toggleTag(nodeId, tag, el) {
+function toggleTag(nodeId: string, tag: string, el: HTMLElement): void {
   if (!nodes[nodeId]) return;
   var tags = nodes[nodeId].config.tags || [];
   var idx = tags.indexOf(tag);

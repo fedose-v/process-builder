@@ -1,7 +1,7 @@
 // ═══════════════════════════════════════════════════════════
 // NODE DEFINITIONS
 // ═══════════════════════════════════════════════════════════
-var NODE_DEFS = {
+var NODE_DEFS: Record<string, Record<string, NodeDef>> = {
   trigger: {
     event_lead:  { label: 'New Lead',     icon: '⚡', badge: 'TRIGGER', color: '#3b82f6' },
     event_deal:  { label: 'Deal Stage',   icon: '💼', badge: 'TRIGGER', color: '#3b82f6' },
@@ -30,45 +30,45 @@ var NODE_DEFS = {
   }
 };
 
-var BADGE_COLORS = {
+var BADGE_COLORS: Record<string, string> = {
   TRIGGER: '#3b82f6', ACTION: '#7c6aff', LOGIC: '#f59e0b', WAIT: '#ec4899', END: '#22c55e'
 };
 
 // ═══════════════════════════════════════════════════════════
 // DRAG FROM PANEL
 // ═══════════════════════════════════════════════════════════
-function onDragStart(e) {
-  draggedType = e.currentTarget.dataset.type;
-  draggedSubtype = e.currentTarget.dataset.subtype;
-  e.dataTransfer.effectAllowed = 'copy';
+function onDragStart(e: DragEvent): void {
+  draggedType = (e.currentTarget as HTMLElement).dataset.type!;
+  draggedSubtype = (e.currentTarget as HTMLElement).dataset.subtype!;
+  e.dataTransfer!.effectAllowed = 'copy';
 }
 
-function onDrop(e) {
+function onDrop(e: DragEvent): void {
   e.preventDefault();
   if (!draggedType) return;
-  var rect = document.getElementById('canvasWrap').getBoundingClientRect();
+  var rect = document.getElementById('canvasWrap')!.getBoundingClientRect();
   var x = (e.clientX - rect.left - panX) / scale - 90;
   var y = (e.clientY - rect.top - panY) / scale - 40;
-  createNode(draggedType, draggedSubtype, x, y);
+  createNode(draggedType, draggedSubtype!, x, y);
   draggedType = null;
   draggedSubtype = null;
-  document.getElementById('canvasHint').classList.add('hidden');
+  document.getElementById('canvasHint')!.classList.add('hidden');
 }
 
 // ═══════════════════════════════════════════════════════════
 // CREATE / RENDER NODE
 // ═══════════════════════════════════════════════════════════
-function createNode(type, subtype, x, y, config) {
+function createNode(type: string, subtype: string, x: number, y: number, config?: Partial<NodeConfig>): string {
   config = config || {};
   var id = 'node_' + (++nodeCounter);
   var def = NODE_DEFS[type][subtype];
-  var node = { id: id, type: type, subtype: subtype, x: x, y: y, config: Object.assign({ label: def.label }, config) };
+  var node: FlowNode = { id: id, type: type, subtype: subtype, x: x, y: y, config: Object.assign({ label: def.label }, config) };
   nodes[id] = node;
   renderNode(node);
   return id;
 }
 
-function renderNode(node) {
+function renderNode(node: FlowNode): void {
   var def = NODE_DEFS[node.type][node.subtype];
   var el = document.createElement('div');
   el.className = 'flow-node type-' + node.type;
@@ -108,26 +108,31 @@ function renderNode(node) {
 
   canvas.appendChild(el);
 
-  el.querySelector('.node-card').addEventListener('mousedown', function(e) {
-    if (e.target.classList.contains('port')) return;
+  el.querySelector('.node-card')!.addEventListener('mousedown', function(e: Event) {
+    var me = e as MouseEvent;
+    if ((me.target as Element).classList.contains('port')) return;
     if (currentTool === 'select') {
-      e.stopPropagation();
-      startDragNode(e, node.id);
+      me.stopPropagation();
+      startDragNode(me, node.id);
       selectNode(node.id);
     }
   });
 
   el.querySelectorAll('.port').forEach(function(port) {
-    port.addEventListener('mousedown', function(e) {
-      e.stopPropagation();
-      if (port.dataset.port.startsWith('out') || port.dataset.port === 'out') {
-        startConnecting(e, node.id, port.dataset.port);
+    port.addEventListener('mousedown', function(e: Event) {
+      var me = e as MouseEvent;
+      me.stopPropagation();
+      var portEl = port as HTMLElement;
+      if (portEl.dataset.port!.startsWith('out') || portEl.dataset.port === 'out') {
+        startConnecting(me, node.id, portEl.dataset.port!);
       }
     });
-    port.addEventListener('mouseup', function(e) {
-      e.stopPropagation();
-      if (connectingFrom && port.dataset.port === 'in' && port.dataset.node !== connectingFrom.nodeId) {
-        finishConnection(port.dataset.node);
+    port.addEventListener('mouseup', function(e: Event) {
+      var me = e as MouseEvent;
+      me.stopPropagation();
+      var portEl = port as HTMLElement;
+      if (connectingFrom && portEl.dataset.port === 'in' && portEl.dataset.node !== connectingFrom.nodeId) {
+        finishConnection(portEl.dataset.node!);
       }
     });
   });
@@ -135,7 +140,7 @@ function renderNode(node) {
   updateCanvas();
 }
 
-function getNodeSublabel(node) {
+function getNodeSublabel(node: FlowNode): string {
   var c = node.config;
   if (node.type === 'trigger') {
     if (node.subtype === 'schedule') return c.cron || 'Not configured';
@@ -159,7 +164,7 @@ function getNodeSublabel(node) {
   return '';
 }
 
-function getNodeBody(node) {
+function getNodeBody(node: FlowNode): string {
   var c = node.config;
   if (node.type === 'condition') {
     var condText = c.condField
@@ -173,7 +178,7 @@ function getNodeBody(node) {
   return '';
 }
 
-function deleteNode(nodeId) {
+function deleteNode(nodeId: string): void {
   var el = document.getElementById(nodeId);
   if (el) el.remove();
   delete nodes[nodeId];
@@ -181,6 +186,6 @@ function deleteNode(nodeId) {
   renderConnections();
   selectNode(null);
   if (Object.keys(nodes).length === 0) {
-    document.getElementById('canvasHint').classList.remove('hidden');
+    document.getElementById('canvasHint')!.classList.remove('hidden');
   }
 }

@@ -1,7 +1,7 @@
 // ═══════════════════════════════════════════════════════════
 // DRAG NODES
 // ═══════════════════════════════════════════════════════════
-function startDragNode(e, nodeId) {
+function startDragNode(e: MouseEvent, nodeId: string): void {
   isDraggingNode = true;
   dragNodeId = nodeId;
   var node = nodes[nodeId];
@@ -12,21 +12,21 @@ function startDragNode(e, nodeId) {
 // ═══════════════════════════════════════════════════════════
 // CANVAS MOUSE EVENTS
 // ═══════════════════════════════════════════════════════════
-function onCanvasMouseDown(e) {
+function onCanvasMouseDown(e: MouseEvent): void {
   if (e.target === document.getElementById('canvasWrap') ||
-      e.target.classList.contains('canvas-bg') ||
+      (e.target as Element).classList.contains('canvas-bg') ||
       e.target === document.getElementById('canvas')) {
     if (currentTool === 'select') {
       isPanning = true;
       panStartX = e.clientX - panX;
       panStartY = e.clientY - panY;
-      document.getElementById('canvas').classList.add('panning');
+      document.getElementById('canvas')!.classList.add('panning');
     }
     selectNode(null);
   }
 }
 
-function onCanvasMouseMove(e) {
+function onCanvasMouseMove(e: MouseEvent): void {
   if (isDraggingNode && dragNodeId) {
     var node = nodes[dragNodeId];
     node.x = (e.clientX - panX) / scale - dragOffsetX;
@@ -42,7 +42,7 @@ function onCanvasMouseMove(e) {
     renderConnections();
   }
   if (connectingFrom && previewLine) {
-    var wrapRect = document.getElementById('canvasWrap').getBoundingClientRect();
+    var wrapRect = document.getElementById('canvasWrap')!.getBoundingClientRect();
     var mx = e.clientX - wrapRect.left;
     var my = e.clientY - wrapRect.top;
     var from = getPortCenter(connectingFrom.nodeId, connectingFrom.portType);
@@ -50,15 +50,15 @@ function onCanvasMouseMove(e) {
   }
 }
 
-function onCanvasMouseUp(e) {
+function onCanvasMouseUp(e: MouseEvent): void {
   isDraggingNode = false;
   dragNodeId = null;
   isPanning = false;
-  document.getElementById('canvas').classList.remove('panning');
+  document.getElementById('canvas')!.classList.remove('panning');
   if (connectingFrom) cancelConnecting();
 }
 
-function updateCanvas() {
+function updateCanvas(): void {
   canvas.style.transform = 'translate(' + panX + 'px, ' + panY + 'px) scale(' + scale + ')';
   canvas.style.transformOrigin = '0 0';
 }
@@ -66,23 +66,23 @@ function updateCanvas() {
 // ═══════════════════════════════════════════════════════════
 // TOOLS & ZOOM
 // ═══════════════════════════════════════════════════════════
-function setTool(tool) {
+function setTool(tool: string): void {
   currentTool = tool;
   document.querySelectorAll('.tool-btn').forEach(function(b) { b.classList.remove('active'); });
   var btn = document.getElementById('tool-' + tool);
   if (btn) btn.classList.add('active');
 }
 
-function zoom(delta) {
+function zoom(delta: number): void {
   scale = Math.min(2, Math.max(0.3, scale + delta));
-  document.getElementById('zoomLabel').textContent = Math.round(scale * 100) + '%';
+  document.getElementById('zoomLabel')!.textContent = Math.round(scale * 100) + '%';
   updateCanvas();
   renderConnections();
 }
 
-function resetView() {
+function resetView(): void {
   scale = 1; panX = 0; panY = 0;
-  document.getElementById('zoomLabel').textContent = '100%';
+  document.getElementById('zoomLabel')!.textContent = '100%';
   updateCanvas();
   renderConnections();
 }
@@ -90,13 +90,13 @@ function resetView() {
 // ═══════════════════════════════════════════════════════════
 // AUTO LAYOUT
 // ═══════════════════════════════════════════════════════════
-function autoLayout() {
+function autoLayout(): void {
   var nodeIds = Object.keys(nodes);
   if (nodeIds.length === 0) return;
 
   // Build adjacency
-  var children = {};
-  var parents = {};
+  var children: Record<string, string[]> = {};
+  var parents: Record<string, string[]> = {};
   nodeIds.forEach(function(id) { children[id] = []; parents[id] = []; });
   connections.forEach(function(c) {
     if (children[c.from].indexOf(c.to) === -1) children[c.from].push(c.to);
@@ -106,11 +106,11 @@ function autoLayout() {
   // Assign levels via BFS
   var roots = nodeIds.filter(function(id) { return parents[id].length === 0; });
   if (roots.length === 0) roots = [nodeIds[0]];
-  var levels = {};
+  var levels: Record<string, number> = {};
   var queue = roots.slice();
   roots.forEach(function(r) { levels[r] = 0; });
   while (queue.length) {
-    var curr = queue.shift();
+    var curr = queue.shift()!;
     children[curr].forEach(function(child) {
       if (levels[child] === undefined || levels[child] < levels[curr] + 1) {
         levels[child] = levels[curr] + 1;
@@ -123,11 +123,11 @@ function autoLayout() {
   // Assign x-slots via DFS: leaves get sequential integer slots,
   // branch nodes are centered over their children — this prevents
   // condition branches from overlapping.
-  var slots = {};
+  var slots: Record<string, number> = {};
   var slotCounter = 0;
-  var visited = {};
+  var visited: Record<string, boolean> = {};
 
-  function assignSlots(id) {
+  function assignSlots(id: string): void {
     if (visited[id]) return;
     visited[id] = true;
     var ch = children[id];
@@ -170,7 +170,7 @@ function autoLayout() {
   });
 
   // Redraw connections during animation, then clean up transition
-  var rafId;
+  var rafId: number;
   function tick() { renderConnections(); rafId = requestAnimationFrame(tick); }
   rafId = requestAnimationFrame(tick);
   setTimeout(function() {

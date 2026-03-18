@@ -1,7 +1,7 @@
 // ═══════════════════════════════════════════════════════════
 // CONNECTIONS
 // ═══════════════════════════════════════════════════════════
-function startConnecting(e, nodeId, portType) {
+function startConnecting(e: MouseEvent, nodeId: string, portType: string): void {
   connectingFrom = { nodeId: nodeId, portType: portType };
   previewLine = document.createElementNS('http://www.w3.org/2000/svg', 'path');
   previewLine.classList.add('connection-line', 'preview');
@@ -9,10 +9,10 @@ function startConnecting(e, nodeId, portType) {
   svgLayer.appendChild(previewLine);
 }
 
-function finishConnection(toNodeId) {
+function finishConnection(toNodeId: string): void {
   if (!connectingFrom) return;
   var existing = connections.find(function(c) {
-    return c.from === connectingFrom.nodeId && c.fromPort === connectingFrom.portType && c.to === toNodeId;
+    return c.from === connectingFrom!.nodeId && c.fromPort === connectingFrom!.portType && c.to === toNodeId;
   });
   if (!existing && connectingFrom.nodeId !== toNodeId) {
     connections.push({ from: connectingFrom.nodeId, fromPort: connectingFrom.portType, to: toNodeId });
@@ -21,16 +21,16 @@ function finishConnection(toNodeId) {
   cancelConnecting();
 }
 
-function cancelConnecting() {
+function cancelConnecting(): void {
   if (previewLine) { previewLine.remove(); previewLine = null; }
   connectingFrom = null;
 }
 
-function getPortCenter(nodeId, portType) {
+function getPortCenter(nodeId: string, portType: string): Point {
   var el = document.getElementById(nodeId);
   if (!el) return { x: 0, y: 0 };
   var port = el.querySelector('[data-port="' + portType + '"]');
-  var wrapRect = document.getElementById('canvasWrap').getBoundingClientRect();
+  var wrapRect = document.getElementById('canvasWrap')!.getBoundingClientRect();
   if (port) {
     var r = port.getBoundingClientRect();
     return {
@@ -44,17 +44,17 @@ function getPortCenter(nodeId, portType) {
   return { x: cx, y: r.bottom - wrapRect.top };
 }
 
-function cubicPath(x1, y1, x2, y2) {
+function cubicPath(x1: number, y1: number, x2: number, y2: number): string {
   var dy = Math.abs(y2 - y1);
   var cp = Math.max(60, dy * 0.5);
   return 'M ' + x1 + ' ' + y1 + ' C ' + x1 + ' ' + (y1 + cp) + ', ' + x2 + ' ' + (y2 - cp) + ', ' + x2 + ' ' + y2;
 }
 
 // Sample 24 points along the cubic bezier in canvasWrap-space
-function sampleBezier(x1, y1, x2, y2) {
+function sampleBezier(x1: number, y1: number, x2: number, y2: number): Point[] {
   var dy = Math.abs(y2 - y1);
   var cp = Math.max(60, dy * 0.5);
-  var pts = [];
+  var pts: Point[] = [];
   for (var i = 0; i <= 24; i++) {
     var t = i / 24;
     var u = 1 - t;
@@ -67,11 +67,11 @@ function sampleBezier(x1, y1, x2, y2) {
 }
 
 // Per-connection hit data for proximity hover detection
-var connHitData = [];
-var connHoverListenerAdded = false;
+var connHitData: ConnHitEntry[] = [];
+var connHoverListenerAdded: boolean = false;
 
-function onConnHover(e) {
-  var wrap = document.getElementById('canvasWrap');
+function onConnHover(e: MouseEvent): void {
+  var wrap = document.getElementById('canvasWrap')!;
   var rect = wrap.getBoundingClientRect();
   var mx = e.clientX - rect.left;
   var my = e.clientY - rect.top;
@@ -88,7 +88,7 @@ function onConnHover(e) {
   });
 }
 
-function renderConnections() {
+function renderConnections(): void {
   // Clear old SVG paths and HTML delete buttons
   svgLayer.querySelectorAll('.conn-group, .connection-line:not(.preview)').forEach(function(e) { e.remove(); });
   canvas.querySelectorAll('.conn-del-btn').forEach(function(e) { e.remove(); });
@@ -96,7 +96,7 @@ function renderConnections() {
 
   // Attach proximity hover listener once
   if (!connHoverListenerAdded) {
-    document.getElementById('canvasWrap').addEventListener('mousemove', onConnHover);
+    document.getElementById('canvasWrap')!.addEventListener('mousemove', onConnHover);
     connHoverListenerAdded = true;
   }
 
@@ -132,7 +132,7 @@ function renderConnections() {
     var btnX = (midX - panX) / scale;
     var btnY = (midY - panY) / scale;
 
-    var btn = document.createElement('div');
+    var btn = document.createElement('div') as HTMLDivElement;
     btn.className = 'conn-del-btn';
     btn.style.left  = btnX + 'px';
     btn.style.top   = btnY + 'px';
@@ -148,7 +148,7 @@ function renderConnections() {
       // keep highlight while cursor is near the line
     });
 
-    btn.addEventListener('click', function(e) {
+    btn.addEventListener('click', function(e: MouseEvent) {
       e.stopPropagation();
       connections.splice(i, 1);
       renderConnections();

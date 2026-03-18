@@ -1,7 +1,7 @@
 // ═══════════════════════════════════════════════════════════
 // PANEL DATA
 // ═══════════════════════════════════════════════════════════
-var PANEL_CATEGORIES = [
+var PANEL_CATEGORIES: PanelCategory[] = [
   {
     id: 'trigger', label: 'Triggers', icon: '⚡', color: '#3b82f6', bg: '#1e3a5f',
     items: [
@@ -28,23 +28,23 @@ var PANEL_CATEGORIES = [
   {
     id: 'logic', label: 'Logic', icon: '🔀', color: '#f59e0b', bg: '#3b2a0f',
     items: [
-      { type: 'condition', subtype: 'if_else',   icon: '🔀', name: 'Condition',   desc: 'If / Else branch', bg: '#3b2a0f' },
-      { type: 'wait',      subtype: 'wait_time', icon: '⏳', name: 'Wait / Delay', desc: 'Pause flow',      bg: '#3d1e35' },
-      { type: 'end',       subtype: 'end',       icon: '🏁', name: 'End',          desc: 'Terminate flow',  bg: '#1e3d2f' }
+      { type: 'condition', subtype: 'if_else',   icon: '🔀', name: 'Condition',    desc: 'If / Else branch', bg: '#3b2a0f' },
+      { type: 'wait',      subtype: 'wait_time', icon: '⏳', name: 'Wait / Delay', desc: 'Pause flow',       bg: '#3d1e35' },
+      { type: 'end',       subtype: 'end',       icon: '🏁', name: 'End',          desc: 'Terminate flow',   bg: '#1e3d2f' }
     ]
   }
 ];
 
-var panelCollapsed = false;
-var currentCategory = null;
+var panelCollapsed: boolean = false;
+var currentCategory: PanelCategory | null = null;
 
 // ═══════════════════════════════════════════════════════════
 // COLLAPSE / EXPAND
 // ═══════════════════════════════════════════════════════════
-function togglePanel() {
+function togglePanel(): void {
   panelCollapsed = !panelCollapsed;
-  var panel = document.getElementById('panelLeft');
-  var icon  = document.getElementById('panelToggleIcon');
+  var panel = document.getElementById('panelLeft')!;
+  var icon  = document.getElementById('panelToggleIcon')!;
   panel.classList.toggle('collapsed', panelCollapsed);
   icon.style.transform = panelCollapsed ? 'scaleX(-1)' : '';
 }
@@ -52,23 +52,23 @@ function togglePanel() {
 // ═══════════════════════════════════════════════════════════
 // VIEW SWITCHING HELPERS
 // ═══════════════════════════════════════════════════════════
-function setView(name) {
-  document.getElementById('viewCategories').style.display = name === 'categories' ? '' : 'none';
-  document.getElementById('viewItems').style.display      = name === 'items'      ? '' : 'none';
-  document.getElementById('viewSearch').style.display     = name === 'search'     ? '' : 'none';
+function setView(name: 'categories' | 'items' | 'search'): void {
+  document.getElementById('viewCategories')!.style.display = name === 'categories' ? '' : 'none';
+  document.getElementById('viewItems')!.style.display      = name === 'items'      ? '' : 'none';
+  document.getElementById('viewSearch')!.style.display     = name === 'search'     ? '' : 'none';
 }
 
 // ═══════════════════════════════════════════════════════════
 // CATEGORY VIEW
 // ═══════════════════════════════════════════════════════════
-function showCategories() {
+function showCategories(): void {
   currentCategory = null;
-  document.getElementById('panelSearch').value = '';
+  (document.getElementById('panelSearch') as HTMLInputElement).value = '';
   setView('categories');
 }
 
-function renderCategories() {
-  var list = document.getElementById('categoryList');
+function renderCategories(): void {
+  var list = document.getElementById('categoryList')!;
   list.innerHTML = PANEL_CATEGORIES.map(function(cat) {
     return '<div class="category-card" onclick="showCategory(\'' + cat.id + '\')">' +
       '<div class="category-card-icon" style="background:' + cat.bg + ';color:' + cat.color + '">' + cat.icon + '</div>' +
@@ -86,21 +86,21 @@ function renderCategories() {
 // ═══════════════════════════════════════════════════════════
 // ITEM VIEW
 // ═══════════════════════════════════════════════════════════
-function showCategory(categoryId) {
-  var cat = null;
+function showCategory(categoryId: string): void {
+  var cat: PanelCategory | null = null;
   for (var i = 0; i < PANEL_CATEGORIES.length; i++) {
     if (PANEL_CATEGORIES[i].id === categoryId) { cat = PANEL_CATEGORIES[i]; break; }
   }
   if (!cat) return;
   currentCategory = cat;
-  document.getElementById('panelCategoryTitle').textContent = cat.label;
-  document.getElementById('panelSearch').value = '';
+  document.getElementById('panelCategoryTitle')!.textContent = cat.label;
+  (document.getElementById('panelSearch') as HTMLInputElement).value = '';
   setView('items');
   renderItems(cat.items);
 }
 
-function renderItems(items) {
-  var list = document.getElementById('itemList');
+function renderItems(items: PanelItem[]): void {
+  var list = document.getElementById('itemList')!;
   if (items.length === 0) {
     list.innerHTML = '<div class="panel-empty">No nodes found</div>';
     return;
@@ -110,7 +110,7 @@ function renderItems(items) {
   }).join('');
 }
 
-function buildItemHTML(item) {
+function buildItemHTML(item: PanelItem): string {
   return '<div class="node-item" draggable="true"' +
     ' data-type="' + item.type + '" data-subtype="' + item.subtype + '"' +
     ' ondragstart="onDragStart(event)">' +
@@ -125,7 +125,7 @@ function buildItemHTML(item) {
 // ═══════════════════════════════════════════════════════════
 // GLOBAL SEARCH
 // ═══════════════════════════════════════════════════════════
-function onPanelSearch(query) {
+function onPanelSearch(query: string): void {
   var q = query.toLowerCase().trim();
 
   if (!q) {
@@ -140,7 +140,7 @@ function onPanelSearch(query) {
   }
 
   // Search across all categories
-  var groups = [];
+  var groups: Array<{ cat: PanelCategory; items: PanelItem[] }> = [];
   PANEL_CATEGORIES.forEach(function(cat) {
     var matched = cat.items.filter(function(item) {
       return item.name.toLowerCase().indexOf(q) !== -1 ||
@@ -150,7 +150,7 @@ function onPanelSearch(query) {
   });
 
   setView('search');
-  var list = document.getElementById('searchList');
+  var list = document.getElementById('searchList')!;
   if (groups.length === 0) {
     list.innerHTML = '<div class="panel-empty">No nodes found</div>';
     return;
@@ -166,8 +166,8 @@ function onPanelSearch(query) {
 }
 
 // ═══════════════════════════════════════════════════════════
-// INIT (called from app.js DOMContentLoaded)
+// INIT (called from app.ts DOMContentLoaded)
 // ═══════════════════════════════════════════════════════════
-function initPanel() {
+function initPanel(): void {
   renderCategories();
 }

@@ -6,7 +6,8 @@
   "scripts": {
     "start": "ts-node server.ts",
     "build": "tsc && tsc -p tsconfig.server.json",
-    "check": "tsc --noEmit && tsc -p tsconfig.server.json --noEmit"
+    "check": "tsc --noEmit && tsc -p tsconfig.server.json --noEmit",
+    "postinstall": "npm run build"
   },
   "dependencies": {
     "express": "^4.18.2"

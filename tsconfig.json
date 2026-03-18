@@ -6,7 +6,9 @@
     "strict": false,
     "lib": ["ES6", "DOM"],
     "sourceMap": false,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true
   },
   "include": ["src/**/*.ts"]
 }

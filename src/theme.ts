@@ -17,13 +17,13 @@ const SUN_ICON =
   '<line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>';
 
 function applyTheme(light: boolean): void {
-  document.body.classList.toggle('light', light);
+  document.documentElement.classList.toggle('light', light);
   const icon = document.getElementById('themeIcon');
   if (icon) icon.innerHTML = light ? MOON_ICON : SUN_ICON;
 }
 
 function toggleTheme(): void {
-  const isLight = document.body.classList.toggle('light');
+  const isLight = document.documentElement.classList.toggle('light');
   localStorage.setItem('theme', isLight ? 'light' : 'dark');
   applyTheme(isLight);
 }

@@ -43,15 +43,15 @@ function renderWorkflows(workflows: WorkflowSummary[]): void {
 
   empty.style.display = 'none';
   grid.innerHTML = workflows.map(wf => `
-    <div class="wf-card" data-id="${wf.id}" onclick="location.href='/builder?id=${wf.id}'">
-      <div class="wf-card-body">
+    <div class="wf-card" data-id="${wf.id}">
+      <a href="/builder?id=${wf.id}" class="wf-card-body">
         <div class="wf-icon">⚡</div>
         <div class="wf-info">
           <div class="wf-name">${escapeHtml(wf.name)}</div>
           <div class="wf-meta">Updated ${timeAgo(wf.updatedAt)}</div>
         </div>
-      </div>
-      <div class="wf-card-footer" onclick="event.stopPropagation()">
+      </a>
+      <div class="wf-card-footer">
         <label class="wf-toggle" title="${wf.active ? 'Deactivate' : 'Activate'}">
           <input
             type="checkbox"

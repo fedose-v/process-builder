@@ -12,7 +12,7 @@
   --accent:      #7c6aff;
 }
 
-body.light {
+html.light {
   --bg:          #f0f4f8;
   --surface:     #ffffff;
   --surface-el:  #f8fafc;
@@ -151,6 +151,8 @@ a { text-decoration: none; color: inherit; }
   display: flex;
   align-items: flex-start;
   gap: 14px;
+  text-decoration: none;
+  color: inherit;
 }
 
 .wf-icon {

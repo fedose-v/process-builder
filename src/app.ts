@@ -285,7 +285,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   applyTheme(localStorage.getItem('theme') === 'light');
 
-  document.getElementById('canvasWrap')!.addEventListener('wheel', onCanvasWheel, { passive: false });
+  const wrap = document.getElementById('canvasWrap')!;
+  wrap.addEventListener('mousedown', onCanvasMouseDown);
+  wrap.addEventListener('mousemove', onCanvasMouseMove);
+  wrap.addEventListener('mouseup', onCanvasMouseUp);
+  wrap.addEventListener('wheel', onCanvasWheel, { passive: false });
 
   initPanel();
 

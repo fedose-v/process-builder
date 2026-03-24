@@ -43,7 +43,7 @@ function renderWorkflows(workflows: WorkflowSummary[]): void {
 
   empty.style.display = 'none';
   grid.innerHTML = workflows.map(wf => `
-    <div class="wf-card" data-id="${wf.id}">
+    <div class="wf-card" data-id="${wf.id}" onclick="location.href='/builder?id=${wf.id}'">
       <div class="wf-card-body">
         <div class="wf-icon">⚡</div>
         <div class="wf-info">
@@ -51,7 +51,7 @@ function renderWorkflows(workflows: WorkflowSummary[]): void {
           <div class="wf-meta">Updated ${timeAgo(wf.updatedAt)}</div>
         </div>
       </div>
-      <div class="wf-card-footer">
+      <div class="wf-card-footer" onclick="event.stopPropagation()">
         <label class="wf-toggle" title="${wf.active ? 'Deactivate' : 'Activate'}">
           <input
             type="checkbox"
@@ -66,7 +66,6 @@ function renderWorkflows(workflows: WorkflowSummary[]): void {
           ${wf.active ? 'Active' : 'Inactive'}
         </span>
         <div class="wf-actions">
-          <a href="/builder?id=${wf.id}" class="wf-btn wf-btn-edit">Edit</a>
           <button class="wf-btn wf-btn-delete" onclick="handleDelete('${wf.id}')">Delete</button>
         </div>
       </div>

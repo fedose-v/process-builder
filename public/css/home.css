@@ -139,10 +139,12 @@ a { text-decoration: none; color: inherit; }
   flex-direction: column;
   gap: 14px;
   transition: border-color 0.15s, box-shadow 0.15s;
+  cursor: pointer;
+  user-select: none;
 }
 .wf-card:hover {
-  border-color: var(--border-hov);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+  border-color: var(--accent);
+  box-shadow: 0 4px 24px rgba(124, 106, 255, 0.12);
 }
 
 .wf-card-body {
@@ -257,7 +259,6 @@ a { text-decoration: none; color: inherit; }
 }
 .wf-btn:hover { background: var(--surface-hov); color: var(--text); }
 
-.wf-btn-edit:hover  { border-color: var(--accent); color: var(--accent); }
 .wf-btn-delete:hover { border-color: #ef4444; color: #ef4444; background: #ef444412; }
 
 /* ── EMPTY STATE ─────────────────────────────────────────── */

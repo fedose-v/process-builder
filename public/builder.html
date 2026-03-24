@@ -24,7 +24,13 @@
     <button class="btn btn-ghost" onclick="loadExample()">Example</button>
     <button class="btn btn-ghost" onclick="saveWorkflow()">Save</button>
     <button class="btn btn-primary" onclick="validateFlow()">Validate</button>
-    <button class="btn btn-success" onclick="activateFlow()">Activate</button>
+    <div class="activation-wrap">
+      <label class="act-toggle" title="Activate / Deactivate workflow">
+        <input type="checkbox" id="activateToggle" onchange="toggleActivation(this.checked)" />
+        <span class="act-track"><span class="act-thumb"></span></span>
+      </label>
+      <span class="act-label" id="activateLabel">Inactive</span>
+    </div>
     <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Toggle theme">
       <svg id="themeIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>

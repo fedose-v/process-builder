@@ -67,10 +67,30 @@ function validateFlow(): boolean {
 // SAVE / LOAD WORKFLOW
 // ═══════════════════════════════════════════════════════════
 
-async function saveWorkflow(activate = false): Promise<void> {
+function setActivationUI(active: boolean): void {
+  const toggle = document.getElementById('activateToggle') as HTMLInputElement | null;
+  const label  = document.getElementById('activateLabel');
+  if (toggle) toggle.checked = active;
+  if (label) {
+    label.textContent = active ? 'Active' : 'Inactive';
+    label.className   = `act-label ${active ? 'act-label--on' : ''}`;
+  }
+}
+
+/**
+ * Persists the current canvas state.
+ * @param active - explicit active flag; if omitted the current toggle state is used.
+ * @param silent - when true, skips the success toast (caller shows its own message).
+ */
+async function saveWorkflow(active?: boolean, silent = false): Promise<void> {
   const nameInput = document.querySelector<HTMLInputElement>('.process-name');
   const name = nameInput?.value.trim() || 'Untitled Workflow';
-  const payload = { name, nodes, connections, active: activate || undefined };
+
+  // Resolve active state: explicit arg > current toggle > false
+  const toggle   = document.getElementById('activateToggle') as HTMLInputElement | null;
+  const isActive = active ?? toggle?.checked ?? false;
+
+  const payload = { name, nodes, connections, active: isActive };
 
   try {
     if (currentWorkflowId) {
@@ -89,16 +109,27 @@ async function saveWorkflow(activate = false): Promise<void> {
       currentWorkflowId = wf.id;
       history.replaceState(null, '', `/builder?id=${wf.id}`);
     }
-    showToast(activate ? '🚀 Workflow activated!' : '✓ Workflow saved');
+    if (!silent) showToast('✓ Workflow saved');
   } catch {
     showToast('⚠ Failed to save workflow');
   }
 }
 
+async function toggleActivation(checked: boolean): Promise<void> {
+  if (checked && !validateFlow()) {
+    setActivationUI(false);
+    return;
+  }
+  setActivationUI(checked);
+  await saveWorkflow(checked, true);
+  showToast(checked ? '🚀 Workflow activated!' : '⏹ Workflow deactivated');
+}
+
 function loadFlowState(data: WorkflowData): void {
-  // Update name in the header input
+  // Restore header fields
   const nameInput = document.querySelector<HTMLInputElement>('.process-name');
   if (nameInput) nameInput.value = data.name;
+  setActivationUI(data.active);
 
   // Clear existing canvas content
   Object.keys(nodes).forEach(id => document.getElementById(id)?.remove());
@@ -122,15 +153,6 @@ function loadFlowState(data: WorkflowData): void {
   if (Object.keys(nodes).length > 0) {
     document.getElementById('canvasHint')?.classList.add('hidden');
   }
-}
-
-// ═══════════════════════════════════════════════════════════
-// ACTIVATE
-// ═══════════════════════════════════════════════════════════
-
-async function activateFlow(): Promise<void> {
-  if (!validateFlow()) return;
-  await saveWorkflow(true);
 }
 
 // ═══════════════════════════════════════════════════════════

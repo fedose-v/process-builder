@@ -37,6 +37,17 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .back-link { display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 6px; color: var(--text-2); border: 1px solid transparent; transition: all 0.15s; flex-shrink: 0; }
 .back-link:hover { background: var(--surface-hov); border-color: var(--border); color: var(--text); }
 .workflow-draft-badge { font-size: 11px; color: var(--text-3); }
+
+/* Activation toggle in builder header */
+.activation-wrap { display: flex; align-items: center; gap: 7px; padding: 0 4px; }
+.act-toggle { position: relative; display: inline-flex; align-items: center; cursor: pointer; flex-shrink: 0; }
+.act-toggle input { position: absolute; opacity: 0; width: 0; height: 0; }
+.act-track { width: 34px; height: 18px; border-radius: 9px; background: var(--border-hov); display: flex; align-items: center; padding: 0 2px; transition: background 0.2s; }
+.act-toggle input:checked + .act-track { background: #22c55e; }
+.act-thumb { width: 14px; height: 14px; border-radius: 50%; background: #fff; transition: transform 0.2s; flex-shrink: 0; }
+.act-toggle input:checked + .act-track .act-thumb { transform: translateX(16px); }
+.act-label { font-size: 12px; font-weight: 500; color: var(--text-3); transition: color 0.2s; white-space: nowrap; }
+.act-label--on { color: #22c55e; }
 .btn { padding: 6px 14px; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; border: none; transition: all 0.15s; }
 .btn-ghost { background: transparent; color: var(--text-2); border: 1px solid var(--border); }
 .btn-ghost:hover { background: var(--surface-hov); color: var(--text); }

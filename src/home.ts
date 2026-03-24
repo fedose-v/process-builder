@@ -138,3 +138,8 @@ document.addEventListener('DOMContentLoaded', () => {
   applyTheme(localStorage.getItem('theme') === 'light');
   fetchWorkflows();
 });
+
+// Re-fetch when the browser restores this page from bfcache (back/forward nav)
+window.addEventListener('pageshow', (e: PageTransitionEvent) => {
+  if (e.persisted) fetchWorkflows();
+});

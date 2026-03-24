@@ -263,6 +263,22 @@ function onCanvasWheel(e: WheelEvent): void {
 // INIT
 // ═══════════════════════════════════════════════════════════
 
+// Re-sync active toggle when the browser restores this page from bfcache.
+// The user may have toggled the workflow on the home page and navigated back.
+window.addEventListener('pageshow', async (e: PageTransitionEvent) => {
+  if (e.persisted && currentWorkflowId) {
+    try {
+      const res = await fetch(`/api/workflows/${currentWorkflowId}`);
+      if (res.ok) {
+        const wf = (await res.json()) as WorkflowData;
+        setActivationUI(wf.active);
+      }
+    } catch {
+      // silently ignore — stale UI is better than a broken page
+    }
+  }
+});
+
 document.addEventListener('DOMContentLoaded', async () => {
   canvas = document.getElementById('canvas') as HTMLDivElement;
   svgLayer = document.getElementById('svg-layer') as unknown as SVGSVGElement;

@@ -1,15 +1,19 @@
 // ═══════════════════════════════════════════════════════════
-// VALIDATE / ACTIVATE
+// VALIDATE
 // ═══════════════════════════════════════════════════════════
+
 function clearValidationErrors(): void {
-  Object.keys(nodes).forEach(function(id) {
-    var el = document.getElementById(id);
-    if (el) el.classList.remove('invalid');
+  Object.keys(nodes).forEach(id => {
+    document.getElementById(id)?.classList.remove('invalid');
   });
 }
 
+function applyInvalid(ids: string[]): void {
+  ids.forEach(id => document.getElementById(id)?.classList.add('invalid'));
+}
+
 function validateFlow(): boolean {
-  var nodeIds = Object.keys(nodes);
+  const nodeIds = Object.keys(nodes);
   clearValidationErrors();
 
   if (nodeIds.length === 0) {
@@ -17,36 +21,31 @@ function validateFlow(): boolean {
     return false;
   }
 
-  var invalidIds: string[] = [];
-
-  var triggers = nodeIds.filter(function(id) { return nodes[id].type === 'trigger'; });
+  const triggers = nodeIds.filter(id => nodes[id].type === 'trigger');
   if (triggers.length === 0) {
-    // No trigger at all — mark every node
-    nodeIds.forEach(function(id) { invalidIds.push(id); });
-    applyInvalid(invalidIds);
+    applyInvalid(nodeIds);
     showToast('⚠ No trigger found. Add a trigger node.');
     return false;
   }
 
-  nodeIds.forEach(function(id) {
-    var node = nodes[id];
-    var hasIn     = connections.some(function(c) { return c.to === id; });
-    var hasOut    = connections.some(function(c) { return c.from === id; });
-    var hasOutYes = connections.some(function(c) { return c.from === id && c.fromPort === 'out_yes'; });
-    var hasOutNo  = connections.some(function(c) { return c.from === id && c.fromPort === 'out_no'; });
+  const invalidIds: string[] = [];
 
-    var bad = false;
+  nodeIds.forEach(id => {
+    const node = nodes[id];
+    const hasIn     = connections.some(c => c.to === id);
+    const hasOut    = connections.some(c => c.from === id);
+    const hasOutYes = connections.some(c => c.from === id && c.fromPort === 'out_yes');
+    const hasOutNo  = connections.some(c => c.from === id && c.fromPort === 'out_no');
+
+    let bad = false;
     if (node.type === 'trigger') {
-      // Trigger must have at least one outgoing connection
       bad = !hasOut;
     } else if (node.type === 'end') {
-      // End must have at least one incoming connection
       bad = !hasIn;
     } else if (node.type === 'condition') {
       // Condition needs incoming + both Yes and No outputs
       bad = !hasIn || !hasOutYes || !hasOutNo;
     } else {
-      // All other nodes need both incoming and outgoing
       bad = !hasIn || !hasOut;
     }
 
@@ -56,7 +55,7 @@ function validateFlow(): boolean {
   applyInvalid(invalidIds);
 
   if (invalidIds.length > 0) {
-    showToast('⚠ ' + invalidIds.length + ' node(s) have connection issues');
+    showToast(`⚠ ${invalidIds.length} node(s) have connection issues`);
     return false;
   }
 
@@ -64,36 +63,88 @@ function validateFlow(): boolean {
   return true;
 }
 
-function applyInvalid(ids: string[]): void {
-  ids.forEach(function(id) {
-    var el = document.getElementById(id);
-    if (el) el.classList.add('invalid');
+// ═══════════════════════════════════════════════════════════
+// SAVE / LOAD WORKFLOW
+// ═══════════════════════════════════════════════════════════
+
+async function saveWorkflow(activate = false): Promise<void> {
+  const nameInput = document.querySelector<HTMLInputElement>('.process-name');
+  const name = nameInput?.value.trim() || 'Untitled Workflow';
+  const payload = { name, nodes, connections, active: activate || undefined };
+
+  try {
+    if (currentWorkflowId) {
+      await fetch(`/api/workflows/${currentWorkflowId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+    } else {
+      const res = await fetch('/api/workflows', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const wf = (await res.json()) as WorkflowData;
+      currentWorkflowId = wf.id;
+      history.replaceState(null, '', `/builder?id=${wf.id}`);
+    }
+    showToast(activate ? '🚀 Workflow activated!' : '✓ Workflow saved');
+  } catch {
+    showToast('⚠ Failed to save workflow');
+  }
+}
+
+function loadFlowState(data: WorkflowData): void {
+  // Update name in the header input
+  const nameInput = document.querySelector<HTMLInputElement>('.process-name');
+  if (nameInput) nameInput.value = data.name;
+
+  // Clear existing canvas content
+  Object.keys(nodes).forEach(id => document.getElementById(id)?.remove());
+  Object.keys(nodes).forEach(id => { delete nodes[id]; });
+  connections.length = 0;
+  nodeCounter = 0;
+
+  // Restore nodes (use existing IDs from saved data, don't create new ones)
+  Object.values(data.nodes).forEach(node => {
+    nodes[node.id] = node;
+    renderNode(node);
+    // Keep nodeCounter ahead of the highest restored ID
+    const num = parseInt(node.id.replace('node_', ''), 10);
+    if (!isNaN(num) && num > nodeCounter) nodeCounter = num;
   });
+
+  // Restore connections
+  data.connections.forEach(c => connections.push(c));
+  renderConnections();
+
+  if (Object.keys(nodes).length > 0) {
+    document.getElementById('canvasHint')?.classList.add('hidden');
+  }
 }
 
-function plural(n: number, one: string, two: string, five: string): string {
-  var mod10 = n % 10, mod100 = n % 100;
-  if (mod100 >= 11 && mod100 <= 14) return five;
-  if (mod10 === 1) return one;
-  if (mod10 >= 2 && mod10 <= 4) return two;
-  return five;
+// ═══════════════════════════════════════════════════════════
+// ACTIVATE
+// ═══════════════════════════════════════════════════════════
+
+async function activateFlow(): Promise<void> {
+  if (!validateFlow()) return;
+  await saveWorkflow(true);
 }
 
-function activateFlow(): void {
-  if (validateFlow()) showToast('🚀 Process activated successfully!');
-}
+// ═══════════════════════════════════════════════════════════
+// CANVAS ACTIONS
+// ═══════════════════════════════════════════════════════════
 
 function clearCanvas(): void {
   if (Object.keys(nodes).length === 0) return;
   if (!confirm('Clear the entire canvas?')) return;
-  Object.keys(nodes).forEach(function(id) {
-    var el = document.getElementById(id);
-    if (el) el.remove();
-  });
+  Object.keys(nodes).forEach(id => document.getElementById(id)?.remove());
   nodes = {};
   connections = [];
   nodeCounter = 0;
-  svgLayer.querySelectorAll('.connection-line').forEach(function(e) { e.remove(); });
+  svgLayer.querySelectorAll('.connection-line').forEach(e => e.remove());
   selectNode(null);
   document.getElementById('canvasHint')!.classList.remove('hidden');
 }
@@ -101,21 +152,23 @@ function clearCanvas(): void {
 // ═══════════════════════════════════════════════════════════
 // EXAMPLE FLOW
 // ═══════════════════════════════════════════════════════════
+
 function loadExample(): void {
   clearCanvas();
   document.getElementById('canvasHint')!.classList.add('hidden');
 
-  var t1 = createNode('trigger',   'event_lead',  300,  40,  { label: 'New Lead Arrives' });
-  var a1 = createNode('action',    'send_email',  300,  180, { label: 'Send Welcome Email', template: 'Welcome Email' });
-  var a2 = createNode('action',    'create_task', 300,  320, { label: 'Create Follow-up Task', taskTitle: 'Call the new lead', assignee: 'Account owner' });
-  var c1 = createNode('condition', 'if_else',     300,  460, { label: 'Lead Score ≥ 80?', condField: 'Lead Score', operator: 'greater than', condValue: '80' });
-  var a3 = createNode('action',    'move_stage',  120,  620, { label: 'Move to Negotiation', stage: 'Negotiation' });
-  var a4 = createNode('action',    'notify',      490,  620, { label: 'Notify Sales Manager', message: 'Low score lead: {{contact.name}}' });
-  var w1 = createNode('wait',      'wait_time',   120,  760, { label: 'Wait 2 Days', durValue: '2', durUnit: 'days' });
-  var e1 = createNode('end',       'end',         120,  900, { label: 'End' });
-  var e2 = createNode('end',       'end',         490,  760, { label: 'End' });
+  const t1 = createNode('trigger',   'event_lead',  300,  40,  { label: 'New Lead Arrives' });
+  const a1 = createNode('action',    'send_email',  300,  180, { label: 'Send Welcome Email', template: 'Welcome Email' });
+  const a2 = createNode('action',    'create_task', 300,  320, { label: 'Create Follow-up Task', taskTitle: 'Call the new lead', assignee: 'Account owner' });
+  const c1 = createNode('condition', 'if_else',     300,  460, { label: 'Lead Score ≥ 80?', condField: 'Lead Score', operator: 'greater than', condValue: '80' });
+  const a3 = createNode('action',    'move_stage',  120,  620, { label: 'Move to Negotiation', stage: 'Negotiation' });
+  const a4 = createNode('action',    'notify',      490,  620, { label: 'Notify Sales Manager', message: 'Low score lead: {{contact.name}}' });
+  const w1 = createNode('wait',      'wait_time',   120,  760, { label: 'Wait 2 Days', durValue: '2', durUnit: 'days' });
+  const e1 = createNode('end',       'end',         120,  900, { label: 'End' });
+  const e2 = createNode('end',       'end',         490,  760, { label: 'End' });
 
-  setTimeout(function() {
+  // Connections are set after a tick so DOM positions are computed
+  setTimeout(() => {
     connections = [
       { from: t1, fromPort: 'out',     to: a1 },
       { from: a1, fromPort: 'out',     to: a2 },
@@ -133,21 +186,24 @@ function loadExample(): void {
 // ═══════════════════════════════════════════════════════════
 // TOAST
 // ═══════════════════════════════════════════════════════════
+
 function showToast(msg: string): void {
-  var t = document.getElementById('toast')!;
+  const t = document.getElementById('toast')!;
   t.textContent = msg;
   t.classList.add('show');
-  setTimeout(function() { t.classList.remove('show'); }, 2800);
+  setTimeout(() => t.classList.remove('show'), 2800);
 }
 
 // ═══════════════════════════════════════════════════════════
 // KEYBOARD
 // ═══════════════════════════════════════════════════════════
-document.addEventListener('keydown', function(e: KeyboardEvent) {
-  if (e.key === 'Delete' || e.key === 'Backspace') {
-    if (selectedNode && (document.activeElement as HTMLElement).tagName !== 'INPUT' && (document.activeElement as HTMLElement).tagName !== 'TEXTAREA') {
-      deleteNode(selectedNode);
-    }
+
+document.addEventListener('keydown', (e: KeyboardEvent) => {
+  const active = document.activeElement as HTMLElement;
+  const isEditing = active.tagName === 'INPUT' || active.tagName === 'TEXTAREA';
+
+  if ((e.key === 'Delete' || e.key === 'Backspace') && selectedNode && !isEditing) {
+    deleteNode(selectedNode);
   }
   if (e.key === 'Escape') cancelConnecting();
 });
@@ -155,66 +211,61 @@ document.addEventListener('keydown', function(e: KeyboardEvent) {
 // ═══════════════════════════════════════════════════════════
 // CTRL + WHEEL ZOOM
 // ═══════════════════════════════════════════════════════════
+
 function onCanvasWheel(e: WheelEvent): void {
   if (!e.ctrlKey) return;
   e.preventDefault();
 
-  var wrap = document.getElementById('canvasWrap')!;
-  var rect = wrap.getBoundingClientRect();
+  const wrap = document.getElementById('canvasWrap')!;
+  const rect = wrap.getBoundingClientRect();
 
   // Cursor position relative to canvasWrap
-  var cursorX = e.clientX - rect.left;
-  var cursorY = e.clientY - rect.top;
+  const cursorX = e.clientX - rect.left;
+  const cursorY = e.clientY - rect.top;
 
-  var delta = e.deltaY < 0 ? 0.1 : -0.1;
-  var newScale = Math.min(2, Math.max(0.3, scale + delta));
+  const delta = e.deltaY < 0 ? 0.1 : -0.1;
+  const newScale = Math.min(2, Math.max(0.3, scale + delta));
   if (newScale === scale) return;
 
-  // Adjust pan so the point under the cursor stays fixed:
-  // worldX = (cursorX - panX) / scale  →  keep worldX constant after scale change
-  panX = cursorX - (cursorX - panX) * newScale / scale;
-  panY = cursorY - (cursorY - panY) * newScale / scale;
+  // Adjust pan so the canvas point under the cursor stays fixed
+  panX = cursorX - (cursorX - panX) * (newScale / scale);
+  panY = cursorY - (cursorY - panY) * (newScale / scale);
   scale = newScale;
 
-  document.getElementById('zoomLabel')!.textContent = Math.round(scale * 100) + '%';
+  document.getElementById('zoomLabel')!.textContent = `${Math.round(scale * 100)}%`;
   updateCanvas();
   renderConnections();
 }
 
 // ═══════════════════════════════════════════════════════════
-// THEME
-// ═══════════════════════════════════════════════════════════
-var MOON_ICON = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
-var SUN_ICON  = '<circle cx="12" cy="12" r="5"/>' +
-  '<line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>' +
-  '<line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>' +
-  '<line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>' +
-  '<line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>';
-
-function applyTheme(light: boolean): void {
-  document.body.classList.toggle('light', light);
-  var icon = document.getElementById('themeIcon');
-  if (icon) icon.innerHTML = light ? MOON_ICON : SUN_ICON;
-}
-
-function toggleTheme(): void {
-  var isLight = document.body.classList.toggle('light');
-  localStorage.setItem('theme', isLight ? 'light' : 'dark');
-  applyTheme(isLight);
-}
-
-// ═══════════════════════════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════════════════════════
-document.addEventListener('DOMContentLoaded', function() {
+
+document.addEventListener('DOMContentLoaded', async () => {
   canvas = document.getElementById('canvas') as HTMLDivElement;
   svgLayer = document.getElementById('svg-layer') as unknown as SVGSVGElement;
 
-  // Restore saved theme
   applyTheme(localStorage.getItem('theme') === 'light');
 
   document.getElementById('canvasWrap')!.addEventListener('wheel', onCanvasWheel, { passive: false });
 
   initPanel();
-  loadExample();
+
+  // Load workflow by ID from URL, or fall back to the example flow
+  const wfId = new URLSearchParams(window.location.search).get('id');
+  if (wfId) {
+    currentWorkflowId = wfId;
+    try {
+      const res = await fetch(`/api/workflows/${wfId}`);
+      if (res.ok) {
+        loadFlowState((await res.json()) as WorkflowData);
+      } else {
+        loadExample();
+      }
+    } catch {
+      loadExample();
+    }
+  } else {
+    loadExample();
+  }
 });

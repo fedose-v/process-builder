@@ -86,6 +86,20 @@ interface PanelCategory {
   items: PanelItem[];
 }
 
+// Workflow data shapes shared between the builder and the home page
+interface WorkflowSummary {
+  id: string;
+  name: string;
+  active: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface WorkflowData extends WorkflowSummary {
+  nodes: Record<string, FlowNode>;
+  connections: Connection[];
+}
+
 // ═══════════════════════════════════════════════════════════
 // GLOBAL STATE
 // ═══════════════════════════════════════════════════════════
@@ -110,3 +124,4 @@ var panX: number = 0;
 var panY: number = 0;
 var canvas: HTMLDivElement;
 var svgLayer: SVGSVGElement;
+var currentWorkflowId: string | null = null;

@@ -76,7 +76,7 @@ function renderCategories(): void {
         '<div class="category-card-name">' + cat.label + '</div>' +
         '<div class="category-card-count">' + cat.items.length + ' nodes</div>' +
       '</div>' +
-      '<svg width="8" height="12" viewBox="0 0 8 12" fill="none" style="flex-shrink:0;color:#64748b">' +
+      '<svg width="8" height="12" viewBox="0 0 8 12" fill="none" style="flex-shrink:0;color:var(--text-3)">' +
         '<path d="M1 2L6 6L1 10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>' +
       '</svg>' +
     '</div>';

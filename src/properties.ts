@@ -88,7 +88,7 @@ function buildPropsForm(node: FlowNode): string {
     }
     if (node.subtype === 'webhook') {
       html += '<div class="prop-group"><div class="prop-label">Webhook URL (readonly)</div>' +
-        '<input class="prop-input" readonly value="https://crm.example.com/hooks/' + id + '" style="color:#64748b;font-size:11px;" />' +
+        '<input class="prop-input" readonly value="https://crm.example.com/hooks/' + id + '" style="color:var(--text-3);font-size:11px;" />' +
         '</div>';
     }
     if (node.subtype === 'event_lead' || node.subtype === 'event_form') {
@@ -120,7 +120,7 @@ function buildPropsForm(node: FlowNode): string {
   if (node.subtype === 'send_sms') {
     html += '<div class="prop-group"><div class="prop-label">Message</div>' +
       buildTextarea(c.message, 'Hi {{contact.name}}, ...', id, 'message') +
-      '<div style="font-size:10px;color:#64748b;margin-top:4px;">Variables: {{contact.name}}, {{deal.value}}</div>' +
+      '<div style="font-size:10px;color:var(--text-3);margin-top:4px;">Variables: {{contact.name}}, {{deal.value}}</div>' +
       '</div>';
   }
 
@@ -195,7 +195,7 @@ function buildPropsForm(node: FlowNode): string {
       '<div class="prop-group"><div class="prop-label">Value</div>' +
       buildInput(c.condValue, 'e.g. 80', id, 'condValue') +
       '</div>' +
-      '<div style="background:#f59e0b11;border:1px solid #f59e0b33;border-radius:8px;padding:10px;font-size:11px;color:#94a3b8;margin-top:8px;">' +
+      '<div style="background:#f59e0b11;border:1px solid #f59e0b33;border-radius:8px;padding:10px;font-size:11px;color:var(--text-2);margin-top:8px;">' +
         '<strong style="color:#f59e0b">Yes</strong> = condition is true<br>' +
         '<strong style="color:#ef4444">No</strong> = condition is false' +
       '</div>';

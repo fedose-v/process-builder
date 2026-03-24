@@ -168,12 +168,12 @@ function getNodeBody(node: FlowNode): string {
   var c = node.config;
   if (node.type === 'condition') {
     var condText = c.condField
-      ? '<span style="color:#f59e0b">' + c.condField + '</span> ' + (c.operator || '') + ' <span style="color:#e2e8f0">' + (c.condValue || '?') + '</span>'
+      ? '<span style="color:#f59e0b">' + c.condField + '</span> ' + (c.operator || '') + ' <span style="color:var(--text)">' + (c.condValue || '?') + '</span>'
       : 'Click to configure condition';
-    return '<div class="node-body" style="padding-bottom:18px;font-size:11px;color:#94a3b8;">' + condText + '</div>';
+    return '<div class="node-body" style="padding-bottom:18px;font-size:11px;color:var(--text-2);">' + condText + '</div>';
   }
   if (node.type === 'wait') {
-    return '<div class="node-body" style="font-size:11px;color:#94a3b8;">⏳ ' + (c.durValue || '1') + ' ' + (c.durUnit || 'hours') + '</div>';
+    return '<div class="node-body" style="font-size:11px;color:var(--text-2);">⏳ ' + (c.durValue || '1') + ' ' + (c.durUnit || 'hours') + '</div>';
   }
   return '';
 }

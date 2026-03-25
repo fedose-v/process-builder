@@ -161,9 +161,7 @@ function loadFlowState(data: WorkflowData): void {
 // CANVAS ACTIONS
 // ═══════════════════════════════════════════════════════════
 
-function clearCanvas(): void {
-    if (Object.keys(nodes).length === 0) return;
-    if (!confirm('Clear the entire canvas?')) return;
+function _doClear(): void {
     Object.keys(nodes).forEach(id => document.getElementById(id)?.remove());
     nodes = {};
     connections = [];
@@ -173,12 +171,16 @@ function clearCanvas(): void {
     document.getElementById('canvasHint')!.classList.remove('hidden');
 }
 
+function clearCanvas(): void {
+    if (Object.keys(nodes).length === 0) return;
+    showConfirm('Clear the entire canvas?', _doClear);
+}
+
 // ═══════════════════════════════════════════════════════════
 // EXAMPLE FLOW
 // ═══════════════════════════════════════════════════════════
 
-function loadExample(): void {
-    clearCanvas();
+function _buildExample(): void {
     document.getElementById('canvasHint')!.classList.add('hidden');
 
     const t1 = createNode('trigger', 'event_lead', 300, 40, {label: 'New Lead Arrives'});
@@ -217,6 +219,17 @@ function loadExample(): void {
         ];
         renderConnections();
     }, 100);
+}
+
+function loadExample(): void {
+    if (Object.keys(nodes).length > 0) {
+        showConfirm('Load example flow? Current canvas will be replaced.', () => {
+            _doClear();
+            _buildExample();
+        });
+    } else {
+        _buildExample();
+    }
 }
 
 // ═══════════════════════════════════════════════════════════

@@ -96,15 +96,16 @@ async function fetchWorkflows(): Promise<void> {
     }
 }
 
-async function handleDelete(id: string): Promise<void> {
-    if (!confirm('Delete this workflow? This cannot be undone.')) return;
-    try {
-        await fetch(`/api/workflows/${id}`, {method: 'DELETE'});
-        showHomeToast('Workflow deleted');
-        await fetchWorkflows();
-    } catch {
-        showHomeToast('⚠ Failed to delete workflow');
-    }
+function handleDelete(id: string): void {
+    showConfirm('Delete this workflow? This cannot be undone.', async () => {
+        try {
+            await fetch(`/api/workflows/${id}`, {method: 'DELETE'});
+            showHomeToast('Workflow deleted');
+            await fetchWorkflows();
+        } catch {
+            showHomeToast('⚠ Failed to delete workflow');
+        }
+    }, true);
 }
 
 async function handleToggle(id: string, checkbox: HTMLInputElement): Promise<void> {

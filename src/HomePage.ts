@@ -125,8 +125,13 @@ class HomePage {
 
 const Home = new HomePage();
 
-function handleDelete(id: string): void { Home.handleDelete(id); }
-function handleToggle(id: string, checkbox: HTMLInputElement): void { Home.handleToggle(id, checkbox); }
+function handleDelete(id: string): void {
+    Home.handleDelete(id);
+}
+
+function handleToggle(id: string, checkbox: HTMLInputElement): void {
+    Home.handleToggle(id, checkbox);
+}
 
 document.addEventListener('DOMContentLoaded', () => {
     Theme.apply(localStorage.getItem('theme') === 'light');

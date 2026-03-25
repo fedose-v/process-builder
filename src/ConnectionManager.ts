@@ -6,7 +6,8 @@ class ConnectionManager {
     private hitData: ConnHitEntry[] = [];
     private hoverListenerAdded = false;
 
-    constructor(private state: AppState) {}
+    constructor(private state: AppState) {
+    }
 
     start(e: MouseEvent, nodeId: string, portType: string): void {
         this.state.connectingFrom = {nodeId, portType};
@@ -146,7 +147,9 @@ class ConnectionManager {
             btn.title = 'Remove connection';
             btn.textContent = '×';
 
-            btn.addEventListener('mouseenter', () => { line.classList.add('conn-highlight'); });
+            btn.addEventListener('mouseenter', () => {
+                line.classList.add('conn-highlight');
+            });
             btn.addEventListener('click', (e: MouseEvent) => {
                 e.stopPropagation();
                 this.state.connections.splice(i, 1);
@@ -166,7 +169,18 @@ class ConnectionManager {
 
 const Conns = new ConnectionManager(state);
 
-function startConnecting(e: MouseEvent, nodeId: string, portType: string): void { Conns.start(e, nodeId, portType); }
-function finishConnection(toNodeId: string): void { Conns.finish(toNodeId); }
-function cancelConnecting(): void { Conns.cancel(); }
-function renderConnections(): void { Conns.render(); }
+function startConnecting(e: MouseEvent, nodeId: string, portType: string): void {
+    Conns.start(e, nodeId, portType);
+}
+
+function finishConnection(toNodeId: string): void {
+    Conns.finish(toNodeId);
+}
+
+function cancelConnecting(): void {
+    Conns.cancel();
+}
+
+function renderConnections(): void {
+    Conns.render();
+}

@@ -11,7 +11,8 @@ class CanvasController {
     private panStartX = 0;
     private panStartY = 0;
 
-    constructor(private state: AppState) {}
+    constructor(private state: AppState) {
+    }
 
     startDragNode(e: MouseEvent, nodeId: string): void {
         this.isDraggingNode = true;
@@ -98,7 +99,10 @@ class CanvasController {
 
         const children: Record<string, string[]> = {};
         const parents: Record<string, string[]> = {};
-        nodeIds.forEach(id => { children[id] = []; parents[id] = []; });
+        nodeIds.forEach(id => {
+            children[id] = [];
+            parents[id] = [];
+        });
         connections.forEach(c => {
             if (children[c.from].indexOf(c.to) === -1) children[c.from].push(c.to);
             if (parents[c.to].indexOf(c.from) === -1) parents[c.to].push(c.from);
@@ -108,7 +112,9 @@ class CanvasController {
         if (roots.length === 0) roots = [nodeIds[0]];
         const levels: Record<string, number> = {};
         const queue = roots.slice();
-        roots.forEach(r => { levels[r] = 0; });
+        roots.forEach(r => {
+            levels[r] = 0;
+        });
         while (queue.length) {
             const curr = queue.shift()!;
             children[curr].forEach(child => {
@@ -118,7 +124,9 @@ class CanvasController {
                 }
             });
         }
-        nodeIds.forEach(id => { if (levels[id] === undefined) levels[id] = 0; });
+        nodeIds.forEach(id => {
+            if (levels[id] === undefined) levels[id] = 0;
+        });
 
         const slots: Record<string, number> = {};
         let slotCounter = 0;
@@ -138,10 +146,14 @@ class CanvasController {
         };
 
         roots.forEach(r => assignSlots(r));
-        nodeIds.forEach(id => { if (!visited[id]) slots[id] = slotCounter++; });
+        nodeIds.forEach(id => {
+            if (!visited[id]) slots[id] = slotCounter++;
+        });
 
         const minSlot = Math.min(...nodeIds.map(id => slots[id]));
-        nodeIds.forEach(id => { slots[id] -= minSlot; });
+        nodeIds.forEach(id => {
+            slots[id] -= minSlot;
+        });
 
         const nodeW = 220, nodeH = 90, hGap = 80, vGap = 50;
         const maxSlot = Math.max(...nodeIds.map(id => slots[id]));
@@ -183,11 +195,34 @@ class CanvasController {
 
 const Canvas = new CanvasController(state);
 
-function startDragNode(e: MouseEvent, nodeId: string): void { Canvas.startDragNode(e, nodeId); }
-function onCanvasMouseDown(e: MouseEvent): void { Canvas.onMouseDown(e); }
-function onCanvasMouseMove(e: MouseEvent): void { Canvas.onMouseMove(e); }
-function onCanvasMouseUp(e: MouseEvent): void { Canvas.onMouseUp(e); }
-function updateCanvas(): void { Canvas.update(); }
-function zoom(delta: number): void { Canvas.zoom(delta); }
-function resetView(): void { Canvas.resetView(); }
-function autoLayout(): void { Canvas.autoLayout(); }
+function startDragNode(e: MouseEvent, nodeId: string): void {
+    Canvas.startDragNode(e, nodeId);
+}
+
+function onCanvasMouseDown(e: MouseEvent): void {
+    Canvas.onMouseDown(e);
+}
+
+function onCanvasMouseMove(e: MouseEvent): void {
+    Canvas.onMouseMove(e);
+}
+
+function onCanvasMouseUp(e: MouseEvent): void {
+    Canvas.onMouseUp(e);
+}
+
+function updateCanvas(): void {
+    Canvas.update();
+}
+
+function zoom(delta: number): void {
+    Canvas.zoom(delta);
+}
+
+function resetView(): void {
+    Canvas.resetView();
+}
+
+function autoLayout(): void {
+    Canvas.autoLayout();
+}

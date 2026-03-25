@@ -69,9 +69,18 @@ class ThemeManager {
         okBtn.className = danger ? 'cm-danger' : 'cm-safe';
         okBtn.textContent = danger ? 'Delete' : 'Confirm';
 
-        const hide = (): void => { overlay!.classList.remove('cm-visible'); };
-        const onOk = (): void => { hide(); cleanup(); onConfirm(); };
-        const onCancel = (): void => { hide(); cleanup(); };
+        const hide = (): void => {
+            overlay!.classList.remove('cm-visible');
+        };
+        const onOk = (): void => {
+            hide();
+            cleanup();
+            onConfirm();
+        };
+        const onCancel = (): void => {
+            hide();
+            cleanup();
+        };
         const onKey = (e: KeyboardEvent): void => {
             if (e.key === 'Escape') onCancel();
             else if (e.key === 'Enter') onOk();
@@ -94,8 +103,14 @@ class ThemeManager {
 
 const Theme = new ThemeManager();
 
-function applyTheme(light: boolean): void { Theme.apply(light); }
-function toggleTheme(): void { Theme.toggle(); }
+function applyTheme(light: boolean): void {
+    Theme.apply(light);
+}
+
+function toggleTheme(): void {
+    Theme.toggle();
+}
+
 function showConfirm(message: string, onConfirm: () => void, danger = false): void {
     Theme.showConfirm(message, onConfirm, danger);
 }

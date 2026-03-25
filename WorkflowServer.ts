@@ -57,7 +57,10 @@ class WorkflowServer {
 
         this.app.get('/api/workflows/:id', (req: Request, res: Response) => {
             const wf = this.load().find(w => w.id === req.params.id);
-            if (!wf) { res.status(404).json({error: 'Not found'}); return; }
+            if (!wf) {
+                res.status(404).json({error: 'Not found'});
+                return;
+            }
             res.json(wf);
         });
 
@@ -81,7 +84,10 @@ class WorkflowServer {
         this.app.put('/api/workflows/:id', (req: Request, res: Response) => {
             const workflows = this.load();
             const idx = workflows.findIndex(w => w.id === req.params.id);
-            if (idx === -1) { res.status(404).json({error: 'Not found'}); return; }
+            if (idx === -1) {
+                res.status(404).json({error: 'Not found'});
+                return;
+            }
             workflows[idx] = {
                 ...workflows[idx],
                 name: (req.body.name as string) ?? workflows[idx].name,
@@ -97,7 +103,10 @@ class WorkflowServer {
         this.app.patch('/api/workflows/:id/toggle', (req: Request, res: Response) => {
             const workflows = this.load();
             const idx = workflows.findIndex(w => w.id === req.params.id);
-            if (idx === -1) { res.status(404).json({error: 'Not found'}); return; }
+            if (idx === -1) {
+                res.status(404).json({error: 'Not found'});
+                return;
+            }
             workflows[idx].active = !workflows[idx].active;
             workflows[idx].updatedAt = new Date().toISOString();
             this.persist(workflows);

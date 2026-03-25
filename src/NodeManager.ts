@@ -36,7 +36,8 @@ class NodeManager {
         TRIGGER: '#3b82f6', ACTION: '#7c6aff', LOGIC: '#f59e0b', WAIT: '#ec4899', END: '#22c55e',
     };
 
-    constructor(private state: AppState) {}
+    constructor(private state: AppState) {
+    }
 
     getDef(type: string, subtype: string): NodeDef {
         return this.NODE_DEFS[type][subtype];
@@ -205,10 +206,22 @@ class NodeManager {
 
 const NodeMgr = new NodeManager(state);
 
-function onDragStart(e: DragEvent): void { NodeMgr.onDragStart(e); }
-function onDrop(e: DragEvent): void { NodeMgr.onDrop(e); }
+function onDragStart(e: DragEvent): void {
+    NodeMgr.onDragStart(e);
+}
+
+function onDrop(e: DragEvent): void {
+    NodeMgr.onDrop(e);
+}
+
 function createNode(type: string, subtype: string, x: number, y: number, config?: Partial<NodeConfig>): string {
     return NodeMgr.create(type, subtype, x, y, config);
 }
-function renderNode(node: FlowNode): void { NodeMgr.render(node); }
-function deleteNode(nodeId: string): void { NodeMgr.delete(nodeId); }
+
+function renderNode(node: FlowNode): void {
+    NodeMgr.render(node);
+}
+
+function deleteNode(nodeId: string): void {
+    NodeMgr.delete(nodeId);
+}

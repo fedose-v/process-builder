@@ -5,7 +5,8 @@
 class PropertiesPanel {
     selectedNode: string | null = null;
 
-    constructor(private state: AppState) {}
+    constructor(private state: AppState) {
+    }
 
     select(id: string | null): void {
         if (this.selectedNode) {
@@ -40,7 +41,10 @@ class PropertiesPanel {
         body.innerHTML = this.buildForm(node);
     }
 
-    private buildSelect(opts: Array<string | {value: string; label: string}>, cur: string, nodeId: string, key: string): string {
+    private buildSelect(opts: Array<string | {
+        value: string;
+        label: string
+    }>, cur: string, nodeId: string, key: string): string {
         const handler = 'onchange="updateConfig(\'' + nodeId + '\',\'' + key + '\',this.value)"';
         const options = opts.map(o => {
             const v = typeof o === 'object' ? o.value : o;
@@ -102,7 +106,10 @@ class PropertiesPanel {
 
         if (node.subtype === 'send_email') {
             html += '<div class="prop-group"><div class="prop-label">Template</div>' +
-                this.buildSelect([{value: '', label: 'Select template...'}, 'Welcome Email', 'Follow-up #1', 'Demo Invite', 'Proposal Sent', 'Win Confirmation'],
+                this.buildSelect([{
+                    value: '',
+                    label: 'Select template...'
+                }, 'Welcome Email', 'Follow-up #1', 'Demo Invite', 'Proposal Sent', 'Win Confirmation'],
                     c.template || '', id, 'template') +
                 '</div>' +
                 '<div class="prop-group"><div class="prop-label">From</div>' +
@@ -264,8 +271,22 @@ class PropertiesPanel {
 
 const Props = new PropertiesPanel(state);
 
-function selectNode(id: string | null): void { Props.select(id); }
-function showProperties(id: string | null): void { Props.show(id); }
-function updateConfig(nodeId: string, key: string, value: string): void { Props.updateConfig(nodeId, key, value); }
-function updateConfigSilent(nodeId: string, key: string, value: string): void { Props.updateConfigSilent(nodeId, key, value); }
-function toggleTag(nodeId: string, tag: string, el: HTMLElement): void { Props.toggleTag(nodeId, tag, el); }
+function selectNode(id: string | null): void {
+    Props.select(id);
+}
+
+function showProperties(id: string | null): void {
+    Props.show(id);
+}
+
+function updateConfig(nodeId: string, key: string, value: string): void {
+    Props.updateConfig(nodeId, key, value);
+}
+
+function updateConfigSilent(nodeId: string, key: string, value: string): void {
+    Props.updateConfigSilent(nodeId, key, value);
+}
+
+function toggleTag(nodeId: string, tag: string, el: HTMLElement): void {
+    Props.toggleTag(nodeId, tag, el);
+}

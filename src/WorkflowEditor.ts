@@ -3,7 +3,8 @@
 // ═══════════════════════════════════════════════════════════
 
 class WorkflowEditor {
-    constructor(private state: AppState) {}
+    constructor(private state: AppState) {
+    }
 
     // ── Validation ───────────────────────────────────────────────────────────────
 
@@ -123,7 +124,9 @@ class WorkflowEditor {
         this.setActivationUI(data.active);
 
         Object.keys(this.state.nodes).forEach(id => document.getElementById(id)?.remove());
-        Object.keys(this.state.nodes).forEach(id => { delete this.state.nodes[id]; });
+        Object.keys(this.state.nodes).forEach(id => {
+            delete this.state.nodes[id];
+        });
         this.state.connections.length = 0;
         this.state.nodeCounter = 0;
 
@@ -165,7 +168,10 @@ class WorkflowEditor {
         document.getElementById('canvasHint')!.classList.add('hidden');
 
         const t1 = NodeMgr.create('trigger', 'event_lead', 300, 40, {label: 'New Lead Arrives'});
-        const a1 = NodeMgr.create('action', 'send_email', 300, 180, {label: 'Send Welcome Email', template: 'Welcome Email'});
+        const a1 = NodeMgr.create('action', 'send_email', 300, 180, {
+            label: 'Send Welcome Email',
+            template: 'Welcome Email'
+        });
         const a2 = NodeMgr.create('action', 'create_task', 300, 320, {
             label: 'Create Follow-up Task',
             taskTitle: 'Call the new lead',
@@ -177,12 +183,19 @@ class WorkflowEditor {
             operator: 'greater than',
             condValue: '80',
         });
-        const a3 = NodeMgr.create('action', 'move_stage', 120, 620, {label: 'Move to Negotiation', stage: 'Negotiation'});
+        const a3 = NodeMgr.create('action', 'move_stage', 120, 620, {
+            label: 'Move to Negotiation',
+            stage: 'Negotiation'
+        });
         const a4 = NodeMgr.create('action', 'notify', 490, 620, {
             label: 'Notify Sales Manager',
             message: 'Low score lead: {{contact.name}}',
         });
-        const w1 = NodeMgr.create('wait', 'wait_time', 120, 760, {label: 'Wait 2 Days', durValue: '2', durUnit: 'days'});
+        const w1 = NodeMgr.create('wait', 'wait_time', 120, 760, {
+            label: 'Wait 2 Days',
+            durValue: '2',
+            durUnit: 'days'
+        });
         const e1 = NodeMgr.create('end', 'end', 120, 900, {label: 'End'});
         const e2 = NodeMgr.create('end', 'end', 490, 760, {label: 'End'});
 
@@ -283,12 +296,29 @@ class WorkflowEditor {
 const Editor = new WorkflowEditor(state);
 
 // ── Global wrappers ───────────────────────────────────────────────────────────
-function validateFlow(): boolean { return Editor.validate(); }
-async function saveWorkflow(active?: boolean, silent = false): Promise<void> { return Editor.save(active, silent); }
-async function toggleActivation(checked: boolean): Promise<void> { return Editor.toggleActivation(checked); }
-function clearCanvas(): void { Editor.clear(); }
-function loadExample(): void { Editor.loadExample(); }
-function showToast(msg: string): void { Editor.showToast(msg); }
+function validateFlow(): boolean {
+    return Editor.validate();
+}
+
+async function saveWorkflow(active?: boolean, silent = false): Promise<void> {
+    return Editor.save(active, silent);
+}
+
+async function toggleActivation(checked: boolean): Promise<void> {
+    return Editor.toggleActivation(checked);
+}
+
+function clearCanvas(): void {
+    Editor.clear();
+}
+
+function loadExample(): void {
+    Editor.loadExample();
+}
+
+function showToast(msg: string): void {
+    Editor.showToast(msg);
+}
 
 // ── Keyboard ─────────────────────────────────────────────────────────────────
 document.addEventListener('keydown', (e: KeyboardEvent) => {

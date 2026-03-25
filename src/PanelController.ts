@@ -151,8 +151,18 @@ class PanelController {
 
 const Panel = new PanelController();
 
-function togglePanel(): void { Panel.toggle(); }
-function showCategories(): void { Panel.showCategories(); }
-function showCategory(categoryId: string): void { Panel.showCategory(categoryId); }
-function onPanelSearch(query: string): void { Panel.onSearch(query); }
-function initPanel(): void { Panel.init(); }
+function togglePanel(): void {
+    Panel.toggle();
+}
+function showCategories(): void {
+    Panel.showCategories();
+}
+function showCategory(categoryId: string): void {
+    Panel.showCategory(categoryId);
+}
+function onPanelSearch(query: string): void {
+    Panel.onSearch(query);
+}
+function initPanel(): void {
+    Panel.init();
+}

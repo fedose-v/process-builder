@@ -3,13 +3,13 @@
 // ═══════════════════════════════════════════════════════════
 function selectNode(id: string | null): void {
     if (selectedNode) {
-        var prev = document.getElementById(selectedNode);
+        const prev = document.getElementById(selectedNode);
         if (prev) prev.classList.remove('selected');
     }
     selectedNode = id;
-    var panel = document.getElementById('panelRight');
+    const panel = document.getElementById('panelRight');
     if (id) {
-        var el = document.getElementById(id);
+        const el = document.getElementById(id);
         if (el) el.classList.add('selected');
         if (panel) panel.classList.add('open');
         showProperties(id);
@@ -20,17 +20,17 @@ function selectNode(id: string | null): void {
 }
 
 function showProperties(id: string | null): void {
-    var title = document.getElementById('propTitle')!;
-    var sub = document.getElementById('propSub')!;
-    var body = document.getElementById('propBody')!;
+    const title = document.getElementById('propTitle')!;
+    const sub = document.getElementById('propSub')!;
+    const body = document.getElementById('propBody')!;
     if (!id) {
         title.textContent = 'Properties';
         sub.textContent = 'Select a node to configure';
         body.innerHTML = '<div class="empty-panel">Click on any node to view and edit its properties here.</div>';
         return;
     }
-    var node = nodes[id];
-    var def = NODE_DEFS[node.type][node.subtype];
+    const node = nodes[id];
+    const def = NODE_DEFS[node.type][node.subtype];
     title.textContent = def.icon + ' ' + def.label;
     sub.textContent = def.badge + ' · ' + node.id;
     body.innerHTML = buildPropsForm(node);
@@ -41,10 +41,10 @@ function buildSelect(opts: Array<string | {
     value: string;
     label: string
 }>, cur: string, nodeId: string, key: string): string {
-    var handler = 'onchange="updateConfig(\'' + nodeId + '\',\'' + key + '\',this.value)"';
-    var options = opts.map(function (o) {
-        var v = typeof o === 'object' ? o.value : o;
-        var l = typeof o === 'object' ? o.label : o;
+    const handler = 'onchange="updateConfig(\'' + nodeId + '\',\'' + key + '\',this.value)"';
+    const options = opts.map(function (o) {
+        const v = typeof o === 'object' ? o.value : o;
+        const l = typeof o === 'object' ? o.label : o;
         return '<option value="' + v + '"' + (cur === v ? ' selected' : '') + '>' + l + '</option>';
     }).join('');
     return '<select class="prop-select" ' + handler + '>' + options + '</select>';
@@ -65,8 +65,8 @@ function buildTextarea(val: string | undefined, placeholder: string, nodeId: str
 }
 
 function buildPropsForm(node: FlowNode): string {
-    var id = node.id;
-    var c = node.config;
+    const id = node.id;
+    const c = node.config;
     var html = '';
 
     // Common: label
@@ -95,7 +95,7 @@ function buildPropsForm(node: FlowNode): string {
                 '</div>';
         }
         if (node.subtype === 'event_lead' || node.subtype === 'event_form') {
-            var sources = ['Any', 'Website', 'Social', 'Referral', 'Ad Campaign'];
+            const sources = ['Any', 'Website', 'Social', 'Referral', 'Ad Campaign'];
             html += '<div class="prop-group"><div class="prop-label">Source Filter</div>' +
                 '<div class="tag-list">' +
                 sources.map(function (s) {
@@ -152,12 +152,12 @@ function buildPropsForm(node: FlowNode): string {
     }
 
     if (node.subtype === 'add_tag') {
-        var allTags = ['Hot Lead', 'Interested', 'Demo Scheduled', 'Pricing Sent', 'VIP'];
-        var activeTags = c.tags || [];
+        const allTags = ['Hot Lead', 'Interested', 'Demo Scheduled', 'Pricing Sent', 'VIP'];
+        const activeTags = c.tags || [];
         html += '<div class="prop-group"><div class="prop-label">Tags to Add</div>' +
             '<div class="tag-list">' +
             allTags.map(function (t) {
-                var isActive = activeTags.indexOf(t) !== -1;
+                const isActive = activeTags.indexOf(t) !== -1;
                 return '<span class="tag' + (isActive ? ' active' : '') + '" onclick="toggleTag(\'' + id + '\',\'' + t + '\',this)">' + t + '</span>';
             }).join('') +
             '</div></div>';
@@ -227,11 +227,11 @@ function buildPropsForm(node: FlowNode): string {
 function updateConfig(nodeId: string, key: string, value: string): void {
     if (!nodes[nodeId]) return;
     nodes[nodeId].config[key as keyof NodeConfig] = value as any;
-    var el = document.getElementById(nodeId);
+    const el = document.getElementById(nodeId);
     if (el) {
         el.remove();
         renderNode(nodes[nodeId]);
-        var newEl = document.getElementById(nodeId);
+        const newEl = document.getElementById(nodeId);
         if (newEl) newEl.classList.add('selected');
         showProperties(nodeId);
         renderConnections();
@@ -242,11 +242,11 @@ function updateConfig(nodeId: string, key: string, value: string): void {
 function updateConfigSilent(nodeId: string, key: string, value: string): void {
     if (!nodes[nodeId]) return;
     nodes[nodeId].config[key as keyof NodeConfig] = value as any;
-    var el = document.getElementById(nodeId);
+    const el = document.getElementById(nodeId);
     if (el) {
         el.remove();
         renderNode(nodes[nodeId]);
-        var newEl = document.getElementById(nodeId);
+        const newEl = document.getElementById(nodeId);
         if (newEl) newEl.classList.add('selected');
         renderConnections();
     }
@@ -256,7 +256,7 @@ function updateConfigSilent(nodeId: string, key: string, value: string): void {
 function toggleTag(nodeId: string, tag: string, el: HTMLElement): void {
     if (!nodes[nodeId]) return;
     var tags = nodes[nodeId].config.tags || [];
-    var idx = tags.indexOf(tag);
+    const idx = tags.indexOf(tag);
     if (idx === -1) {
         tags.push(tag);
         el.classList.add('active');
@@ -266,7 +266,7 @@ function toggleTag(nodeId: string, tag: string, el: HTMLElement): void {
     }
     nodes[nodeId].config.tags = tags;
     // Update node card without rebuilding properties
-    var nodeEl = document.getElementById(nodeId);
+    const nodeEl = document.getElementById(nodeId);
     if (nodeEl) {
         nodeEl.remove();
         renderNode(nodes[nodeId]);

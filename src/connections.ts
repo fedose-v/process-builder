@@ -11,7 +11,7 @@ function startConnecting(e: MouseEvent, nodeId: string, portType: string): void 
 
 function finishConnection(toNodeId: string): void {
     if (!connectingFrom) return;
-    var existing = connections.find(function (c) {
+    const existing = connections.find(function (c) {
         return c.from === connectingFrom!.nodeId && c.fromPort === connectingFrom!.portType && c.to === toNodeId;
     });
     if (!existing && connectingFrom.nodeId !== toNodeId) {
@@ -30,37 +30,37 @@ function cancelConnecting(): void {
 }
 
 function getPortCenter(nodeId: string, portType: string): Point {
-    var el = document.getElementById(nodeId);
+    const el = document.getElementById(nodeId);
     if (!el) return {x: 0, y: 0};
-    var port = el.querySelector('[data-port="' + portType + '"]');
-    var wrapRect = document.getElementById('canvasWrap')!.getBoundingClientRect();
+    const port = el.querySelector('[data-port="' + portType + '"]');
+    const wrapRect = document.getElementById('canvasWrap')!.getBoundingClientRect();
     if (port) {
-        var r = port.getBoundingClientRect();
+        let r = port.getBoundingClientRect();
         return {
             x: r.left + r.width / 2 - wrapRect.left,
             y: r.top + r.height / 2 - wrapRect.top
         };
     }
-    var r = el.getBoundingClientRect();
-    var cx = r.left + r.width / 2 - wrapRect.left;
+    const r = el.getBoundingClientRect();
+    const cx = r.left + r.width / 2 - wrapRect.left;
     if (portType === 'in') return {x: cx, y: r.top - wrapRect.top};
     return {x: cx, y: r.bottom - wrapRect.top};
 }
 
 function cubicPath(x1: number, y1: number, x2: number, y2: number): string {
-    var dy = Math.abs(y2 - y1);
-    var cp = Math.max(60, dy * 0.5);
+    let dy = Math.abs(y2 - y1);
+    let cp = Math.max(60, dy * 0.5);
     return 'M ' + x1 + ' ' + y1 + ' C ' + x1 + ' ' + (y1 + cp) + ', ' + x2 + ' ' + (y2 - cp) + ', ' + x2 + ' ' + y2;
 }
 
 // Sample 24 points along the cubic bezier in canvasWrap-space
 function sampleBezier(x1: number, y1: number, x2: number, y2: number): Point[] {
-    var dy = Math.abs(y2 - y1);
-    var cp = Math.max(60, dy * 0.5);
-    var pts: Point[] = [];
-    for (var i = 0; i <= 24; i++) {
-        var t = i / 24;
-        var u = 1 - t;
+    const dy = Math.abs(y2 - y1);
+    const cp = Math.max(60, dy * 0.5);
+    let pts: Point[] = [];
+    for (let i = 0; i <= 24; i++) {
+        let t = i / 24;
+        let u = 1 - t;
         pts.push({
             x: u * u * u * x1 + 3 * u * u * t * x1 + 3 * u * t * t * x2 + t * t * t * x2,
             y: u * u * u * y1 + 3 * u * u * t * (y1 + cp) + 3 * u * t * t * (y2 - cp) + t * t * t * y2
@@ -70,19 +70,19 @@ function sampleBezier(x1: number, y1: number, x2: number, y2: number): Point[] {
 }
 
 // Per-connection hit data for proximity hover detection
-var connHitData: ConnHitEntry[] = [];
-var connHoverListenerAdded: boolean = false;
+let connHitData: ConnHitEntry[] = [];
+let connHoverListenerAdded: boolean = false;
 
 function onConnHover(e: MouseEvent): void {
-    var wrap = document.getElementById('canvasWrap')!;
-    var rect = wrap.getBoundingClientRect();
-    var mx = e.clientX - rect.left;
-    var my = e.clientY - rect.top;
-    var THRESHOLD = 12; // px in screen/canvasWrap space
+    const wrap = document.getElementById('canvasWrap')!;
+    const rect = wrap.getBoundingClientRect();
+    const mx = e.clientX - rect.left;
+    const my = e.clientY - rect.top;
+    const THRESHOLD = 12; // px in screen/canvasWrap space
 
     connHitData.forEach(function (h) {
-        var near = h.points.some(function (p) {
-            var dx = p.x - mx, dy = p.y - my;
+        const near = h.points.some(function (p) {
+            const dx = p.x - mx, dy = p.y - my;
             return dx * dx + dy * dy <= THRESHOLD * THRESHOLD;
         });
         h.btn.style.opacity = near ? '1' : '0';
@@ -108,21 +108,21 @@ function renderConnections(): void {
     }
 
     connections.forEach(function (conn, i) {
-        var fromPort = conn.fromPort || 'out';
-        var from = getPortCenter(conn.from, fromPort);
-        var to = getPortCenter(conn.to, 'in');
-        var d = cubicPath(from.x, from.y, to.x, to.y);
+        const fromPort = conn.fromPort || 'out';
+        const from = getPortCenter(conn.from, fromPort);
+        const to = getPortCenter(conn.to, 'in');
+        const d = cubicPath(from.x, from.y, to.x, to.y);
 
-        var isYes = fromPort === 'out_yes';
-        var isNo = fromPort === 'out_no';
-        var color = isYes ? '#22c55e' : (isNo ? '#ef4444' : '#7c6aff');
-        var arrow = isYes ? 'arrow-yes' : (isNo ? 'arrow-no' : 'arrow');
+        const isYes = fromPort === 'out_yes';
+        const isNo = fromPort === 'out_no';
+        const color = isYes ? '#22c55e' : (isNo ? '#ef4444' : '#7c6aff');
+        const arrow = isYes ? 'arrow-yes' : (isNo ? 'arrow-no' : 'arrow');
 
         // ── SVG path (visual only, no pointer events) ──────────
-        var g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
         g.classList.add('conn-group');
 
-        var line = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'path');
         line.classList.add('connection-line');
         if (isYes) line.classList.add('yes');
         else if (isNo) line.classList.add('no');
@@ -134,12 +134,12 @@ function renderConnections(): void {
 
         // ── HTML delete button inside #canvas ──────────────────
         // Midpoint in canvasWrap-space → convert to canvas-local space
-        var midX = (from.x + to.x) / 2;
-        var midY = (from.y + to.y) / 2;
-        var btnX = (midX - panX) / scale;
-        var btnY = (midY - panY) / scale;
+        const midX = (from.x + to.x) / 2;
+        const midY = (from.y + to.y) / 2;
+        const btnX = (midX - panX) / scale;
+        const btnY = (midY - panY) / scale;
 
-        var btn = document.createElement('div') as HTMLDivElement;
+        const btn = document.createElement('div') as HTMLDivElement;
         btn.className = 'conn-del-btn';
         btn.style.left = btnX + 'px';
         btn.style.top = btnY + 'px';

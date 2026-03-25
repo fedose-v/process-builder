@@ -84,16 +84,16 @@ const PANEL_CATEGORIES: PanelCategory[] = [
     }
 ];
 
-var panelCollapsed: boolean = false;
-var currentCategory: PanelCategory | null = null;
+let panelCollapsed: boolean = false;
+let currentCategory: PanelCategory | null = null;
 
 // ═══════════════════════════════════════════════════════════
 // COLLAPSE / EXPAND
 // ═══════════════════════════════════════════════════════════
 function togglePanel(): void {
     panelCollapsed = !panelCollapsed;
-    var panel = document.getElementById('panelLeft')!;
-    var icon = document.getElementById('panelToggleIcon')!;
+    let panel = document.getElementById('panelLeft')!;
+    let icon = document.getElementById('panelToggleIcon')!;
     panel.classList.toggle('collapsed', panelCollapsed);
     icon.style.transform = panelCollapsed ? 'scaleX(-1)' : '';
 }
@@ -117,7 +117,7 @@ function showCategories(): void {
 }
 
 function renderCategories(): void {
-    var list = document.getElementById('categoryList')!;
+    let list = document.getElementById('categoryList')!;
     list.innerHTML = PANEL_CATEGORIES.map(function (cat) {
         return '<div class="category-card" onclick="showCategory(\'' + cat.id + '\')">' +
             '<div class="category-card-icon" style="background:' + cat.bg + ';color:' + cat.color + '">' + cat.icon + '</div>' +
@@ -136,8 +136,8 @@ function renderCategories(): void {
 // ITEM VIEW
 // ═══════════════════════════════════════════════════════════
 function showCategory(categoryId: string): void {
-    var cat: PanelCategory | null = null;
-    for (var i = 0; i < PANEL_CATEGORIES.length; i++) {
+    let cat: PanelCategory | null = null;
+    for (let i = 0; i < PANEL_CATEGORIES.length; i++) {
         if (PANEL_CATEGORIES[i].id === categoryId) {
             cat = PANEL_CATEGORIES[i];
             break;
@@ -152,7 +152,7 @@ function showCategory(categoryId: string): void {
 }
 
 function renderItems(items: PanelItem[]): void {
-    var list = document.getElementById('itemList')!;
+    let list = document.getElementById('itemList')!;
     if (items.length === 0) {
         list.innerHTML = '<div class="panel-empty">No nodes found</div>';
         return;
@@ -178,7 +178,7 @@ function buildItemHTML(item: PanelItem): string {
 // GLOBAL SEARCH
 // ═══════════════════════════════════════════════════════════
 function onPanelSearch(query: string): void {
-    var q = query.toLowerCase().trim();
+    let q = query.toLowerCase().trim();
 
     if (!q) {
         // Restore the previous view
@@ -192,9 +192,9 @@ function onPanelSearch(query: string): void {
     }
 
     // Search across all categories
-    var groups: Array<{ cat: PanelCategory; items: PanelItem[] }> = [];
+    let groups: Array<{ cat: PanelCategory; items: PanelItem[] }> = [];
     PANEL_CATEGORIES.forEach(function (cat) {
-        var matched = cat.items.filter(function (item) {
+        let matched = cat.items.filter(function (item) {
             return item.name.toLowerCase().indexOf(q) !== -1 ||
                 item.desc.toLowerCase().indexOf(q) !== -1;
         });
@@ -202,7 +202,7 @@ function onPanelSearch(query: string): void {
     });
 
     setView('search');
-    var list = document.getElementById('searchList')!;
+    let list = document.getElementById('searchList')!;
     if (groups.length === 0) {
         list.innerHTML = '<div class="panel-empty">No nodes found</div>';
         return;

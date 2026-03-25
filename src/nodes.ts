@@ -1,7 +1,7 @@
 // ═══════════════════════════════════════════════════════════
 // NODE DEFINITIONS
 // ═══════════════════════════════════════════════════════════
-var NODE_DEFS: Record<string, Record<string, NodeDef>> = {
+const NODE_DEFS: Record<string, Record<string, NodeDef>> = {
     trigger: {
         event_lead: {label: 'New Lead', icon: '⚡', badge: 'TRIGGER', color: '#3b82f6'},
         event_deal: {label: 'Deal Stage', icon: '💼', badge: 'TRIGGER', color: '#3b82f6'},
@@ -30,7 +30,7 @@ var NODE_DEFS: Record<string, Record<string, NodeDef>> = {
     }
 };
 
-var BADGE_COLORS: Record<string, string> = {
+const BADGE_COLORS: Record<string, string> = {
     TRIGGER: '#3b82f6', ACTION: '#7c6aff', LOGIC: '#f59e0b', WAIT: '#ec4899', END: '#22c55e'
 };
 

@@ -4,7 +4,7 @@
 function startDragNode(e: MouseEvent, nodeId: string): void {
     isDraggingNode = true;
     dragNodeId = nodeId;
-    var node = nodes[nodeId];
+    const node = nodes[nodeId];
     dragOffsetX = (e.clientX - panX) / scale - node.x;
     dragOffsetY = (e.clientY - panY) / scale - node.y;
 }
@@ -28,10 +28,10 @@ function onCanvasMouseDown(e: MouseEvent): void {
 
 function onCanvasMouseMove(e: MouseEvent): void {
     if (isDraggingNode && dragNodeId) {
-        var node = nodes[dragNodeId];
+        const node = nodes[dragNodeId];
         node.x = (e.clientX - panX) / scale - dragOffsetX;
         node.y = (e.clientY - panY) / scale - dragOffsetY;
-        var el = document.getElementById(dragNodeId);
+        const el = document.getElementById(dragNodeId);
         if (el) {
             el.style.left = node.x + 'px';
             el.style.top = node.y + 'px';
@@ -45,10 +45,10 @@ function onCanvasMouseMove(e: MouseEvent): void {
         renderConnections();
     }
     if (connectingFrom && previewLine) {
-        var wrapRect = document.getElementById('canvasWrap')!.getBoundingClientRect();
-        var mx = e.clientX - wrapRect.left;
-        var my = e.clientY - wrapRect.top;
-        var from = getPortCenter(connectingFrom.nodeId, connectingFrom.portType);
+        const wrapRect = document.getElementById('canvasWrap')!.getBoundingClientRect();
+        const mx = e.clientX - wrapRect.left;
+        const my = e.clientY - wrapRect.top;
+        const from = getPortCenter(connectingFrom.nodeId, connectingFrom.portType);
         previewLine.setAttribute('d', cubicPath(from.x, from.y, mx, my));
     }
 }
@@ -74,7 +74,7 @@ function setTool(tool: string): void {
     document.querySelectorAll('.tool-btn').forEach(function (b) {
         b.classList.remove('active');
     });
-    var btn = document.getElementById('tool-' + tool);
+    const btn = document.getElementById('tool-' + tool);
     if (btn) btn.classList.add('active');
 }
 
@@ -98,12 +98,12 @@ function resetView(): void {
 // AUTO LAYOUT
 // ═══════════════════════════════════════════════════════════
 function autoLayout(): void {
-    var nodeIds = Object.keys(nodes);
+    const nodeIds = Object.keys(nodes);
     if (nodeIds.length === 0) return;
 
     // Build adjacency
-    var children: Record<string, string[]> = {};
-    var parents: Record<string, string[]> = {};
+    let children: Record<string, string[]> = {};
+    let parents: Record<string, string[]> = {};
     nodeIds.forEach(function (id) {
         children[id] = [];
         parents[id] = [];
@@ -114,17 +114,17 @@ function autoLayout(): void {
     });
 
     // Assign levels via BFS
-    var roots = nodeIds.filter(function (id) {
+    let roots = nodeIds.filter(function (id) {
         return parents[id].length === 0;
     });
     if (roots.length === 0) roots = [nodeIds[0]];
-    var levels: Record<string, number> = {};
-    var queue = roots.slice();
+    let levels: Record<string, number> = {};
+    let queue = roots.slice();
     roots.forEach(function (r) {
         levels[r] = 0;
     });
     while (queue.length) {
-        var curr = queue.shift()!;
+        const curr = queue.shift()!;
         children[curr].forEach(function (child) {
             if (levels[child] === undefined || levels[child] < levels[curr] + 1) {
                 levels[child] = levels[curr] + 1;
@@ -139,21 +139,21 @@ function autoLayout(): void {
     // Assign x-slots via DFS: leaves get sequential integer slots,
     // branch nodes are centered over their children — this prevents
     // condition branches from overlapping.
-    var slots: Record<string, number> = {};
-    var slotCounter = 0;
-    var visited: Record<string, boolean> = {};
+    let slots: Record<string, number> = {};
+    let slotCounter = 0;
+    let visited: Record<string, boolean> = {};
 
     function assignSlots(id: string): void {
         if (visited[id]) return;
         visited[id] = true;
-        var ch = children[id];
+        const ch = children[id];
         if (ch.length === 0) {
             slots[id] = slotCounter++;
         } else {
             ch.forEach(function (child) {
                 assignSlots(child);
             });
-            var childSlots = ch.map(function (c) {
+            const childSlots = ch.map(function (c) {
                 return slots[c];
             });
             slots[id] = (Math.min.apply(null, childSlots) + Math.max.apply(null, childSlots)) / 2;
@@ -171,33 +171,33 @@ function autoLayout(): void {
     });
 
     // Normalize slots so minimum is 0
-    var minSlot = Math.min.apply(null, nodeIds.map(function (id) {
+    const minSlot = Math.min.apply(null, nodeIds.map(function (id) {
         return slots[id];
     }));
     nodeIds.forEach(function (id) {
         slots[id] -= minSlot;
     });
 
-    var nodeW = 220, nodeH = 90, hGap = 80, vGap = 50;
+    const nodeW = 220, nodeH = 90, hGap = 80, vGap = 50;
 
     // Center the layout horizontally: compute startX so the layout's
     // midpoint lands at x=400 (typical canvas center).
     // Layout spans: startX … startX + maxSlot*(nodeW+hGap) + nodeW
-    var maxSlot = Math.max.apply(null, nodeIds.map(function (id) {
+    const maxSlot = Math.max.apply(null, nodeIds.map(function (id) {
         return slots[id];
     }));
-    var startX = Math.max(40, 400 - (maxSlot * (nodeW + hGap) + nodeW) / 2);
+    const startX = Math.max(40, 400 - (maxSlot * (nodeW + hGap) + nodeW) / 2);
 
     // Apply positions with smooth CSS transition
     nodeIds.forEach(function (id) {
-        var el = document.getElementById(id);
+        const el = document.getElementById(id);
         if (el) el.style.transition = 'left 0.4s cubic-bezier(0.4,0,0.2,1), top 0.4s cubic-bezier(0.4,0,0.2,1)';
     });
 
     nodeIds.forEach(function (id) {
         nodes[id].x = slots[id] * (nodeW + hGap) + startX;
         nodes[id].y = 60 + levels[id] * (nodeH + vGap);
-        var el = document.getElementById(id);
+        const el = document.getElementById(id);
         if (el) {
             el.style.left = nodes[id].x + 'px';
             el.style.top = nodes[id].y + 'px';
@@ -205,7 +205,7 @@ function autoLayout(): void {
     });
 
     // Redraw connections during animation, then clean up transition
-    var rafId: number;
+    let rafId: number;
 
     function tick() {
         renderConnections();
@@ -217,7 +217,7 @@ function autoLayout(): void {
         cancelAnimationFrame(rafId);
         renderConnections();
         nodeIds.forEach(function (id) {
-            var el = document.getElementById(id);
+            const el = document.getElementById(id);
             if (el) el.style.transition = '';
         });
     }, 420);

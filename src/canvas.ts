@@ -16,12 +16,10 @@ function onCanvasMouseDown(e: MouseEvent): void {
     if (e.target === document.getElementById('canvasWrap') ||
         (e.target as Element).classList.contains('canvas-bg') ||
         e.target === document.getElementById('canvas')) {
-        if (currentTool === 'select') {
-            isPanning = true;
-            panStartX = e.clientX - panX;
-            panStartY = e.clientY - panY;
-            document.getElementById('canvas')!.classList.add('panning');
-        }
+        isPanning = true;
+        panStartX = e.clientX - panX;
+        panStartY = e.clientY - panY;
+        document.getElementById('canvas')!.classList.add('panning');
         selectNode(null);
     }
 }

@@ -118,11 +118,16 @@ function renderNode(node: FlowNode): void {
     el.querySelector('.node-card')!.addEventListener('mousedown', function (e: Event) {
         var me = e as MouseEvent;
         if ((me.target as Element).classList.contains('port')) return;
-        if (currentTool === 'select') {
-            me.stopPropagation();
-            startDragNode(me, node.id);
-            selectNode(node.id);
-        }
+        me.stopPropagation();
+        startDragNode(me, node.id);
+        selectNode(node.id);
+    });
+
+    // Finish a connection by releasing the mouse anywhere on this node
+    el.addEventListener('mouseup', function (e: Event) {
+        if (!connectingFrom || connectingFrom.nodeId === node.id) return;
+        (e as MouseEvent).stopPropagation();
+        finishConnection(node.id);
     });
 
     el.querySelectorAll('.port').forEach(function (port) {

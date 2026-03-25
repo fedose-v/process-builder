@@ -9,6 +9,6 @@
     "lib": ["ES2020"],
     "skipLibCheck": true
   },
-  "include": ["server.ts"],
+  "include": ["WorkflowServer.ts"],
   "exclude": ["src", "node_modules", "public"]
 }

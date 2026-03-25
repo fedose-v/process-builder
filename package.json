@@ -2,9 +2,9 @@
   "name": "crm-process-builder",
   "version": "1.0.0",
   "description": "CRM Business Process Builder",
-  "main": "server.js",
+  "main": "WorkflowServer.js",
   "scripts": {
-    "start": "ts-node server.ts",
+    "start": "ts-node WorkflowServer.ts",
     "build": "tsc && tsc -p tsconfig.server.json",
     "check": "tsc --noEmit && tsc -p tsconfig.server.json --noEmit",
     "postinstall": "npm run build"

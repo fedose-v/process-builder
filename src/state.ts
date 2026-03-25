@@ -1,6 +1,7 @@
 // ═══════════════════════════════════════════════════════════
 // TYPES
 // ═══════════════════════════════════════════════════════════
+
 interface NodeConfig {
     label?: string;
     cron?: string;
@@ -101,27 +102,34 @@ interface WorkflowData extends WorkflowSummary {
 }
 
 // ═══════════════════════════════════════════════════════════
-// GLOBAL STATE
+// APPLICATION STATE — single shared instance for the builder
 // ═══════════════════════════════════════════════════════════
-var nodes: Record<string, FlowNode> = {};
-var connections: Connection[] = [];
-var selectedNode: string | null = null;
-var draggedType: string | null = null;
-var draggedSubtype: string | null = null;
-var currentTool: string = 'select';
-var scale: number = 1;
-var connectingFrom: ConnectingFrom | null = null;
-var previewLine: SVGPathElement | null = null;
-var nodeCounter: number = 0;
-var isDraggingNode: boolean = false;
-var dragNodeId: string | null = null;
-var dragOffsetX: number = 0;
-var dragOffsetY: number = 0;
-var isPanning: boolean = false;
-var panStartX: number = 0;
-var panStartY: number = 0;
-var panX: number = 0;
-var panY: number = 0;
-var canvas: HTMLDivElement;
-var svgLayer: SVGSVGElement;
-var currentWorkflowId: string | null = null;
+
+class AppState {
+    // Canvas data
+    nodes: Record<string, FlowNode> = {};
+    connections: Connection[] = [];
+    nodeCounter: number = 0;
+
+    // Drag-from-panel
+    draggedType: string | null = null;
+    draggedSubtype: string | null = null;
+
+    // Viewport
+    panX: number = 0;
+    panY: number = 0;
+    scale: number = 1;
+
+    // Active connection being drawn
+    connectingFrom: ConnectingFrom | null = null;
+    previewLine: SVGPathElement | null = null;
+
+    // DOM references (assigned on DOMContentLoaded)
+    canvas!: HTMLDivElement;
+    svgLayer!: SVGSVGElement;
+
+    // Workflow persistence
+    currentWorkflowId: string | null = null;
+}
+
+const state = new AppState();

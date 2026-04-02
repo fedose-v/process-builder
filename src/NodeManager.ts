@@ -20,6 +20,18 @@ class NodeManager {
             notify: {label: 'Notify User', icon: '🔔', badge: 'ACTION', color: '#7c6aff'},
             move_stage: {label: 'Move Stage', icon: '🚀', badge: 'ACTION', color: '#7c6aff'},
             webhook_call: {label: 'HTTP Request', icon: '⚙️', badge: 'ACTION', color: '#7c6aff'},
+            get_managers: {label: 'Get Managers', icon: '👥', badge: 'ACTION', color: '#7c6aff'},
+            create_activity: {label: 'Create Activity', icon: '📌', badge: 'ACTION', color: '#7c6aff'},
+            add_note: {label: 'Add Note', icon: '📝', badge: 'ACTION', color: '#7c6aff'},
+            deal_stage_move: {label: 'Deal Stage Move', icon: '📊', badge: 'ACTION', color: '#7c6aff'},
+            new_email_template: {label: 'New Email Template', icon: '📄', badge: 'ACTION', color: '#7c6aff'},
+            get_email_templates: {label: 'Get Email Templates', icon: '📂', badge: 'ACTION', color: '#7c6aff'},
+            email_manager: {label: 'Email Manager', icon: '📨', badge: 'ACTION', color: '#7c6aff'},
+            email_client: {label: 'Email Client', icon: '📩', badge: 'ACTION', color: '#7c6aff'},
+            web_hook: {label: 'Web Hook', icon: '🔌', badge: 'ACTION', color: '#7c6aff'},
+            reschedule_activities: {label: 'Reschedule Activities', icon: '📅', badge: 'ACTION', color: '#7c6aff'},
+            update_lead: {label: 'Update Lead', icon: '👤', badge: 'ACTION', color: '#7c6aff'},
+            update_client: {label: 'Update Client', icon: '🏢', badge: 'ACTION', color: '#7c6aff'},
         },
         condition: {
             if_else: {label: 'Condition', icon: '🔀', badge: 'LOGIC', color: '#f59e0b'},
@@ -184,6 +196,18 @@ class NodeManager {
         if (node.subtype === 'notify') return c.notifyTo || 'Account owner';
         if (node.subtype === 'move_stage') return c.stage ? '→ ' + c.stage : 'Select stage';
         if (node.subtype === 'webhook_call') return (c.method || 'POST') + ' ' + (c.url ? c.url.replace(/^https?:\/\//, '').substring(0, 22) + '…' : 'No URL');
+        if (node.subtype === 'get_managers') return c.territory ? c.territory : 'All territories';
+        if (node.subtype === 'create_activity') return (c.activityType || 'Call') + (c.taskTitle ? ': ' + c.taskTitle : '');
+        if (node.subtype === 'add_note') return c.entityType ? c.entityType + ': ' + (c.noteText ? c.noteText.substring(0, 22) + '…' : '…') : 'Not configured';
+        if (node.subtype === 'deal_stage_move') return c.stage ? '→ ' + c.stage : 'Select stage';
+        if (node.subtype === 'new_email_template') return c.templateName || 'Not configured';
+        if (node.subtype === 'get_email_templates') return c.category || 'All categories';
+        if (node.subtype === 'email_manager') return c.managerRole ? c.managerRole + (c.subject ? ': ' + c.subject : '') : 'Not configured';
+        if (node.subtype === 'email_client') return c.subject || 'No subject';
+        if (node.subtype === 'web_hook') return c.webhookName || 'Not configured';
+        if (node.subtype === 'reschedule_activities') return c.newTime || 'Start of next day';
+        if (node.subtype === 'update_lead') return c.leadField ? c.leadField + ' = ' + (c.value || '?') : 'Not configured';
+        if (node.subtype === 'update_client') return c.clientField ? c.clientField + ' = ' + (c.value || '?') : 'Not configured';
         if (node.subtype === 'wait_time') return (c.durValue || '1') + ' ' + (c.durUnit || 'hours');
         if (node.subtype === 'if_else') return c.condField ? (c.condField + ' ' + (c.operator || '') + ' ' + (c.condValue || '')) : 'Set condition';
         return '';

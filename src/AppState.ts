@@ -29,6 +29,28 @@ interface NodeConfig {
     waitType?: string;
     durValue?: string;
     durUnit?: string;
+    // get_managers
+    territory?: string;
+    role?: string;
+    // create_activity
+    activityType?: string;
+    // add_note
+    entityType?: string;
+    noteText?: string;
+    // deal_stage_move / new_email_template / get_email_templates
+    pipeline?: string;
+    templateName?: string;
+    subject?: string;
+    category?: string;
+    // email_manager
+    managerRole?: string;
+    // web_hook
+    webhookName?: string;
+    // reschedule_activities
+    newTime?: string;
+    // update_lead / update_client
+    leadField?: string;
+    clientField?: string;
 }
 
 interface FlowNode {

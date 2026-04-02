@@ -328,6 +328,10 @@ document.addEventListener('keydown', (e: KeyboardEvent) => {
         NodeMgr.delete(Props.selectedNode);
     }
     if (e.key === 'Escape') Conns.cancel();
+    if (e.key === 's' && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault();
+        Editor.save();
+    }
 });
 
 // ── bfcache sync ─────────────────────────────────────────────────────────────

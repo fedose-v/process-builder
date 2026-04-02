@@ -187,6 +187,133 @@ class PropertiesPanel {
                 '</div>';
         }
 
+        if (node.subtype === 'get_managers') {
+            html += '<div class="prop-group"><div class="prop-label">Territory</div>' +
+                this.buildSelect(['All territories', 'North', 'South', 'East', 'West', 'Central'], c.territory || 'All territories', id, 'territory') +
+                '</div>' +
+                '<div class="prop-group"><div class="prop-label">Role Filter</div>' +
+                this.buildSelect(['All roles', 'Manager', 'Team Lead', 'Sales Rep', 'Account Executive'], c.role || 'All roles', id, 'role') +
+                '</div>';
+        }
+
+        if (node.subtype === 'create_activity') {
+            html += '<div class="prop-group"><div class="prop-label">Activity Type</div>' +
+                this.buildSelect(['Call', 'Meeting', 'Email', 'Task'], c.activityType || 'Call', id, 'activityType') +
+                '</div>' +
+                '<div class="prop-group"><div class="prop-label">Title</div>' +
+                this.buildInput(c.taskTitle, 'Activity title...', id, 'taskTitle') +
+                '</div>' +
+                '<div class="prop-group"><div class="prop-label">Assign To</div>' +
+                this.buildSelect(['Account owner', 'Any sales rep', 'John Smith', 'Maria Garcia'], c.assignee || 'Account owner', id, 'assignee') +
+                '</div>' +
+                '<div class="prop-group"><div class="prop-label">Due In</div>' +
+                this.buildSelect(['1 hour', 'Same day', 'Next day', '3 days', '1 week'], c.dueIn || '1 hour', id, 'dueIn') +
+                '</div>';
+        }
+
+        if (node.subtype === 'add_note') {
+            html += '<div class="prop-group"><div class="prop-label">Entity Type</div>' +
+                this.buildSelect(['Lead', 'Deal', 'Client'], c.entityType || 'Lead', id, 'entityType') +
+                '</div>' +
+                '<div class="prop-group"><div class="prop-label">Note Text</div>' +
+                this.buildTextarea(c.noteText, 'Note text...', id, 'noteText') +
+                '</div>';
+        }
+
+        if (node.subtype === 'deal_stage_move') {
+            html += '<div class="prop-group"><div class="prop-label">Pipeline</div>' +
+                this.buildSelect(['Main Pipeline', 'Enterprise', 'SMB', 'Partner'], c.pipeline || 'Main Pipeline', id, 'pipeline') +
+                '</div>' +
+                '<div class="prop-group"><div class="prop-label">Target Stage</div>' +
+                this.buildSelect(['New', 'Contacted', 'Proposal', 'Negotiation', 'Won', 'Lost'], c.stage || 'New', id, 'stage') +
+                '</div>';
+        }
+
+        if (node.subtype === 'new_email_template') {
+            html += '<div class="prop-group"><div class="prop-label">Template Name</div>' +
+                this.buildInput(c.templateName, 'Template name...', id, 'templateName') +
+                '</div>' +
+                '<div class="prop-group"><div class="prop-label">Subject</div>' +
+                this.buildInput(c.subject, 'Email subject...', id, 'subject') +
+                '</div>' +
+                '<div class="prop-group"><div class="prop-label">Body</div>' +
+                this.buildTextarea(c.body, 'Email body...', id, 'body') +
+                '</div>';
+        }
+
+        if (node.subtype === 'get_email_templates') {
+            html += '<div class="prop-group"><div class="prop-label">Category</div>' +
+                this.buildSelect(['All categories', 'Sales', 'Support', 'Marketing', 'Onboarding'], c.category || 'All categories', id, 'category') +
+                '</div>';
+        }
+
+        if (node.subtype === 'email_manager') {
+            html += '<div class="prop-group"><div class="prop-label">Recipient</div>' +
+                this.buildSelect(['Account owner', 'Team lead', 'Specific manager'], c.managerRole || 'Account owner', id, 'managerRole') +
+                '</div>' +
+                '<div class="prop-group"><div class="prop-label">Subject</div>' +
+                this.buildInput(c.subject, 'Email subject...', id, 'subject') +
+                '</div>' +
+                '<div class="prop-group"><div class="prop-label">Template</div>' +
+                this.buildSelect([{value: '', label: 'Select template...'}, 'Welcome Email', 'Follow-up #1', 'Demo Invite', 'Proposal Sent'], c.template || '', id, 'template') +
+                '</div>';
+        }
+
+        if (node.subtype === 'email_client') {
+            html += '<div class="prop-group"><div class="prop-label">Subject</div>' +
+                this.buildInput(c.subject, 'Email subject...', id, 'subject') +
+                '</div>' +
+                '<div class="prop-group"><div class="prop-label">Template</div>' +
+                this.buildSelect([{value: '', label: 'Select template...'}, 'Welcome Email', 'Follow-up #1', 'Demo Invite', 'Proposal Sent', 'Win Confirmation'], c.template || '', id, 'template') +
+                '</div>' +
+                '<div class="prop-group"><div class="prop-label">From</div>' +
+                this.buildSelect(['Account owner', 'sales@company.com', 'support@company.com'], c.from || 'Account owner', id, 'from') +
+                '</div>';
+        }
+
+        if (node.subtype === 'web_hook') {
+            html += '<div class="prop-group"><div class="prop-label">Webhook Name</div>' +
+                this.buildInput(c.webhookName, 'My webhook...', id, 'webhookName') +
+                '</div>' +
+                '<div class="prop-group"><div class="prop-label">URL</div>' +
+                this.buildInput(c.url, 'https://api.example.com/hook', id, 'url') +
+                '</div>' +
+                '<div class="prop-group"><div class="prop-label">Payload (JSON)</div>' +
+                this.buildTextarea(c.body, '{"event": "{{trigger.type}}"}', id, 'body', 'style="font-family:monospace;font-size:11px;"') +
+                '</div>';
+        }
+
+        if (node.subtype === 'reschedule_activities') {
+            html += '<div class="prop-group"><div class="prop-label">Activity Types</div>' +
+                '<div class="tag-list">' +
+                ['Call', 'Meeting', 'Email', 'Task'].map(t => {
+                    const active = (c.tags || []).indexOf(t) !== -1;
+                    return '<span class="tag' + (active ? ' active' : '') + '" onclick="toggleTag(\'' + id + '\',\'' + t + '\',this)">' + t + '</span>';
+                }).join('') +
+                '</div></div>' +
+                '<div class="prop-group"><div class="prop-label">Reschedule To</div>' +
+                this.buildSelect(['Start of next day', '+1 hour', '+2 hours', '+4 hours', 'Next Monday'], c.newTime || 'Start of next day', id, 'newTime') +
+                '</div>';
+        }
+
+        if (node.subtype === 'update_lead') {
+            html += '<div class="prop-group"><div class="prop-label">Field</div>' +
+                this.buildSelect(['Assignee', 'Status', 'Lead Score', 'Territory', 'Priority'], c.leadField || 'Assignee', id, 'leadField') +
+                '</div>' +
+                '<div class="prop-group"><div class="prop-label">New Value</div>' +
+                this.buildInput(c.value, 'Value or {{variable}}', id, 'value') +
+                '</div>';
+        }
+
+        if (node.subtype === 'update_client') {
+            html += '<div class="prop-group"><div class="prop-label">Field</div>' +
+                this.buildSelect(['Assignee', 'Status', 'Segment', 'Industry', 'Priority'], c.clientField || 'Assignee', id, 'clientField') +
+                '</div>' +
+                '<div class="prop-group"><div class="prop-label">New Value</div>' +
+                this.buildInput(c.value, 'Value or {{variable}}', id, 'value') +
+                '</div>';
+        }
+
         if (node.subtype === 'if_else') {
             html += '<div class="prop-group"><div class="prop-label">Field</div>' +
                 this.buildSelect(['Lead Score', 'Lead Status', 'Deal Value', 'Tag contains', 'Custom Field'], c.condField || 'Lead Score', id, 'condField') +

@@ -123,6 +123,18 @@ interface PanelCategory {
     items: PanelItem[];
 }
 
+// Run history record — returned by /api/workflows/:id/runs
+interface RunRecord {
+    id: string;
+    workflowId: string;
+    startedAt: string;       // ISO datetime
+    duration: number;        // milliseconds
+    status: 'success' | 'error';
+    errorNodeId?: string;
+    errorNodeLabel?: string;
+    errorMessage?: string;
+}
+
 // Workflow data shapes shared between the builder and the home page
 interface WorkflowSummary {
     id: string;

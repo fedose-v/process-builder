@@ -13,6 +13,7 @@ class WorkflowServer {
         this.port = process.env.PORT ?? 3000;
         this.dataDir = path_1.default.join(__dirname, 'data');
         this.dataFile = path_1.default.join(__dirname, 'data', 'workflows.json');
+        this.runsFile = path_1.default.join(__dirname, 'data', 'run-history.json');
         this.app.use(express_1.default.json());
         this.app.use(express_1.default.static(path_1.default.join(__dirname, 'public')));
         this.registerRoutes();
@@ -22,6 +23,16 @@ class WorkflowServer {
             return [];
         try {
             return JSON.parse(fs_1.default.readFileSync(this.dataFile, 'utf8'));
+        }
+        catch {
+            return [];
+        }
+    }
+    loadRuns() {
+        if (!fs_1.default.existsSync(this.runsFile))
+            return [];
+        try {
+            return JSON.parse(fs_1.default.readFileSync(this.runsFile, 'utf8'));
         }
         catch {
             return [];
@@ -98,6 +109,12 @@ class WorkflowServer {
         this.app.delete('/api/workflows/:id', (req, res) => {
             this.persist(this.load().filter(w => w.id !== req.params.id));
             res.json({ ok: true });
+        });
+        this.app.get('/api/workflows/:id/runs', (req, res) => {
+            const runs = this.loadRuns()
+                .filter(r => r.workflowId === req.params.id)
+                .sort((a, b) => new Date(b.startedAt).getTime() - new Date(a.startedAt).getTime());
+            res.json(runs);
         });
     }
     start() {

@@ -263,6 +263,93 @@ a { text-decoration: none; color: inherit; }
 
 .wf-btn-delete:hover { border-color: #ef4444; color: #ef4444; background: #ef444412; }
 
+/* ── RUN HISTORY ─────────────────────────────────────────── */
+.wf-runs-slot {
+  border-top: 1px solid var(--border);
+  padding-top: 10px;
+}
+
+.wf-runs {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.wf-runs-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  margin-bottom: 4px;
+}
+
+.wf-runs-empty {
+  font-size: 11px;
+  color: var(--text-3);
+}
+
+.run-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: var(--text-2);
+  line-height: 1.4;
+}
+
+.run-row-err {
+  color: var(--text-2);
+}
+
+.run-date {
+  color: var(--text-3);
+  min-width: 88px;
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.run-dur {
+  min-width: 36px;
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-3);
+}
+
+.run-status-icon {
+  font-size: 10px;
+  font-weight: 700;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.run-ok {
+  background: #22c55e22;
+  color: #22c55e;
+  border: 1px solid #22c55e44;
+}
+
+.run-err {
+  background: #ef444418;
+  color: #ef4444;
+  border: 1px solid #ef444440;
+  cursor: help;
+}
+
+.run-error-step {
+  color: #ef4444;
+  font-size: 11px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 130px;
+}
+
 /* ── EMPTY STATE ─────────────────────────────────────────── */
 .wf-empty {
   display: flex;

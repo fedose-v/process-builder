@@ -14,6 +14,17 @@ interface WorkflowRecord {
     connections: unknown[];
 }
 
+interface RunRecord {
+    id: string;
+    workflowId: string;
+    startedAt: string;
+    duration: number;
+    status: 'success' | 'error';
+    errorNodeId?: string;
+    errorNodeLabel?: string;
+    errorMessage?: string;
+}
+
 // ─── Server ───────────────────────────────────────────────────────────────────
 
 class WorkflowServer {
@@ -21,6 +32,7 @@ class WorkflowServer {
     private readonly port = process.env.PORT ?? 3000;
     private readonly dataDir = path.join(__dirname, 'data');
     private readonly dataFile = path.join(__dirname, 'data', 'workflows.json');
+    private readonly runsFile = path.join(__dirname, 'data', 'run-history.json');
 
     constructor() {
         this.app.use(express.json());
@@ -32,6 +44,15 @@ class WorkflowServer {
         if (!fs.existsSync(this.dataFile)) return [];
         try {
             return JSON.parse(fs.readFileSync(this.dataFile, 'utf8')) as WorkflowRecord[];
+        } catch {
+            return [];
+        }
+    }
+
+    private loadRuns(): RunRecord[] {
+        if (!fs.existsSync(this.runsFile)) return [];
+        try {
+            return JSON.parse(fs.readFileSync(this.runsFile, 'utf8')) as RunRecord[];
         } catch {
             return [];
         }
@@ -116,6 +137,13 @@ class WorkflowServer {
         this.app.delete('/api/workflows/:id', (req: Request, res: Response) => {
             this.persist(this.load().filter(w => w.id !== req.params.id));
             res.json({ok: true});
+        });
+
+        this.app.get('/api/workflows/:id/runs', (req: Request, res: Response) => {
+            const runs = this.loadRuns()
+                .filter(r => r.workflowId === req.params.id)
+                .sort((a, b) => new Date(b.startedAt).getTime() - new Date(a.startedAt).getTime());
+            res.json(runs);
         });
     }
 

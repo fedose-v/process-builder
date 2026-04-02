@@ -428,6 +428,18 @@ class PropertiesPanel {
                 '</div>';
         }
 
+        if (node.subtype === 'any_action_done') {
+            html += '<div style="background:#f59e0b11;border:1px solid #f59e0b33;border-radius:8px;padding:10px;font-size:11px;color:var(--text-2);margin-top:4px;">' +
+                'Продолжает выполнение, когда <strong style="color:#f59e0b">хотя бы одна</strong> из входящих веток завершилась.' +
+                '</div>';
+        }
+
+        if (node.subtype === 'all_actions_done') {
+            html += '<div style="background:#f59e0b11;border:1px solid #f59e0b33;border-radius:8px;padding:10px;font-size:11px;color:var(--text-2);margin-top:4px;">' +
+                'Продолжает выполнение, когда <strong style="color:#f59e0b">все</strong> входящие ветки завершились.' +
+                '</div>';
+        }
+
         if (node.subtype === 'wait_time') {
             html += '<div class="prop-group"><div class="prop-label">Wait Type</div>' +
                 this.buildSelect(['Fixed Duration', 'Until Date/Time', 'Until Event'], c.waitType || 'Fixed Duration', id, 'waitType') +

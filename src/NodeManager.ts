@@ -56,6 +56,10 @@ class NodeManager {
         condition: {
             if_else: {label: 'Condition', icon: '🔀', badge: 'LOGIC', color: '#f59e0b'},
         },
+        gate: {
+            any_action_done: {label: 'Any Action Done', icon: '☑️', badge: 'LOGIC', color: '#f59e0b'},
+            all_actions_done: {label: 'All Actions Done', icon: '✅', badge: 'LOGIC', color: '#f59e0b'},
+        },
         wait: {
             wait_time: {label: 'Wait / Delay', icon: '⏳', badge: 'WAIT', color: '#ec4899'},
         },
@@ -246,6 +250,8 @@ class NodeManager {
         if (node.subtype === 'reschedule_activities') return c.newTime || 'Start of next day';
         if (node.subtype === 'update_lead') return c.leadField ? c.leadField + ' = ' + (c.value || '?') : 'Not configured';
         if (node.subtype === 'update_client') return c.clientField ? c.clientField + ' = ' + (c.value || '?') : 'Not configured';
+        if (node.subtype === 'any_action_done') return 'At least 1 action';
+        if (node.subtype === 'all_actions_done') return 'All actions';
         if (node.subtype === 'wait_time') return (c.durValue || '1') + ' ' + (c.durUnit || 'hours');
         if (node.subtype === 'if_else') return c.condField ? (c.condField + ' ' + (c.operator || '') + ' ' + (c.condValue || '')) : 'Set condition';
         return '';
@@ -258,6 +264,12 @@ class NodeManager {
                 ? '<span style="color:#f59e0b">' + c.condField + '</span> ' + (c.operator || '') + ' <span style="color:var(--text)">' + (c.condValue || '?') + '</span>'
                 : 'Click to configure condition';
             return '<div class="node-body" style="padding-bottom:18px;font-size:11px;color:var(--text-2);">' + condText + '</div>';
+        }
+        if (node.type === 'gate') {
+            const text = node.subtype === 'any_action_done'
+                ? 'Proceeds when <strong style="color:#f59e0b">≥ 1</strong> branch completes'
+                : 'Proceeds when <strong style="color:#f59e0b">all</strong> branches complete';
+            return '<div class="node-body" style="font-size:11px;color:var(--text-2);">' + text + '</div>';
         }
         if (node.type === 'wait') {
             return '<div class="node-body" style="font-size:11px;color:var(--text-2);">⏳ ' + (c.durValue || '1') + ' ' + (c.durUnit || 'hours') + '</div>';

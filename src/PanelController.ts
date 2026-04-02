@@ -63,6 +63,8 @@ class PanelController {
             id: 'logic', label: 'Logic', icon: '🔀', color: '#f59e0b', bg: '#3b2a0f',
             items: [
                 {type: 'condition', subtype: 'if_else', icon: '🔀', name: 'Condition', desc: 'If / Else branch', bg: '#3b2a0f'},
+                {type: 'gate', subtype: 'any_action_done', icon: '☑️', name: 'Any Action Done', desc: 'At least 1 branch done', bg: '#3b2a0f'},
+                {type: 'gate', subtype: 'all_actions_done', icon: '✅', name: 'All Actions Done', desc: 'All branches done', bg: '#3b2a0f'},
                 {type: 'wait', subtype: 'wait_time', icon: '⏳', name: 'Wait / Delay', desc: 'Pause flow', bg: '#3d1e35'},
                 {type: 'end', subtype: 'end', icon: '🏁', name: 'End', desc: 'Terminate flow', bg: '#1e3d2f'},
             ],

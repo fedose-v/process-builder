@@ -10,6 +10,26 @@ class NodeManager {
             event_form: {label: 'Form Submit', icon: '📋', badge: 'TRIGGER', color: '#3b82f6'},
             schedule: {label: 'Schedule', icon: '🕐', badge: 'TRIGGER', color: '#3b82f6'},
             webhook: {label: 'Webhook', icon: '🔗', badge: 'TRIGGER', color: '#3b82f6'},
+            activity_created: {label: 'Activity Created', icon: '📌', badge: 'TRIGGER', color: '#3b82f6'},
+            lead_assigned: {label: 'Lead Assigned', icon: '👤', badge: 'TRIGGER', color: '#3b82f6'},
+            client_assigned: {label: 'Client Assigned', icon: '🏢', badge: 'TRIGGER', color: '#3b82f6'},
+            deal_assigned: {label: 'Deal Assigned', icon: '💼', badge: 'TRIGGER', color: '#3b82f6'},
+            trial_expiring: {label: 'Trial Expiring', icon: '⏰', badge: 'TRIGGER', color: '#3b82f6'},
+            manager_leaving: {label: 'Manager Leaving', icon: '🚪', badge: 'TRIGGER', color: '#3b82f6'},
+            subscription_cancelled: {label: 'Subscription Cancelled', icon: '❌', badge: 'TRIGGER', color: '#3b82f6'},
+            lead_wrote: {label: 'Lead Wrote', icon: '💬', badge: 'TRIGGER', color: '#3b82f6'},
+            lead_messaged: {label: 'Lead Messaged', icon: '📨', badge: 'TRIGGER', color: '#3b82f6'},
+            deal_created: {label: 'Deal Created', icon: '🤝', badge: 'TRIGGER', color: '#3b82f6'},
+            contact_created: {label: 'Contact Created', icon: '👥', badge: 'TRIGGER', color: '#3b82f6'},
+            call_ended: {label: 'Call Ended', icon: '📞', badge: 'TRIGGER', color: '#3b82f6'},
+            order_paid: {label: 'Order Paid', icon: '💳', badge: 'TRIGGER', color: '#3b82f6'},
+            deal_stage_changed: {label: 'Deal Stage Changed', icon: '📊', badge: 'TRIGGER', color: '#3b82f6'},
+            client_status_stuck: {label: 'Client Status Stuck', icon: '🔒', badge: 'TRIGGER', color: '#3b82f6'},
+            touch_reminder: {label: 'Touch Reminder', icon: '🔔', badge: 'TRIGGER', color: '#3b82f6'},
+            account_expiring: {label: 'Account Expiring', icon: '⚠️', badge: 'TRIGGER', color: '#3b82f6'},
+            client_pipeline_change: {label: 'Client Pipeline Change', icon: '🔄', badge: 'TRIGGER', color: '#3b82f6'},
+            lead_unprocessed: {label: 'Lead Unprocessed', icon: '⏳', badge: 'TRIGGER', color: '#3b82f6'},
+            activity_overdue: {label: 'Activity Overdue', icon: '🚨', badge: 'TRIGGER', color: '#3b82f6'},
         },
         action: {
             send_email: {label: 'Send Email', icon: '📧', badge: 'ACTION', color: '#7c6aff'},
@@ -183,9 +203,27 @@ class NodeManager {
         if (node.type === 'trigger') {
             if (node.subtype === 'schedule') return c.cron || 'Not configured';
             if (node.subtype === 'webhook') return 'URL: /hooks/' + node.id;
-            if (node.subtype === 'event_deal') {
-                return (c.fromStage || 'Any') + ' → ' + (c.toStage || 'Any');
-            }
+            if (node.subtype === 'event_deal') return (c.fromStage || 'Any') + ' → ' + (c.toStage || 'Any');
+            if (node.subtype === 'activity_created') return c.activityType || 'Any type';
+            if (node.subtype === 'lead_assigned') return c.assignee || 'Any manager';
+            if (node.subtype === 'client_assigned') return c.assignee || 'Any manager';
+            if (node.subtype === 'deal_assigned') return c.pipeline || 'Any pipeline';
+            if (node.subtype === 'trial_expiring') return (c.daysLeft || '7') + ' days left';
+            if (node.subtype === 'manager_leaving') return c.department || 'Any department';
+            if (node.subtype === 'subscription_cancelled') return c.plan || 'Any plan';
+            if (node.subtype === 'lead_wrote') return c.channel || 'Any channel';
+            if (node.subtype === 'lead_messaged') return c.channel || 'Any channel';
+            if (node.subtype === 'deal_created') return c.pipeline || 'Any pipeline';
+            if (node.subtype === 'contact_created') return c.source || 'Any source';
+            if (node.subtype === 'call_ended') return c.outcome || 'Any outcome';
+            if (node.subtype === 'order_paid') return c.minAmount ? '≥ ' + c.minAmount : 'Any amount';
+            if (node.subtype === 'deal_stage_changed') return (c.fromStage || 'Any') + ' → ' + (c.toStage || 'Any');
+            if (node.subtype === 'client_status_stuck') return (c.clientStatus || 'Any') + ' · ' + (c.stuckDays || '7') + 'd';
+            if (node.subtype === 'touch_reminder') return (c.touchDays || '30') + ' days no touch';
+            if (node.subtype === 'account_expiring') return (c.daysLeft || '60') + ' days to expire';
+            if (node.subtype === 'client_pipeline_change') return (c.fromPipeline || 'Any') + ' → ' + (c.toPipeline || 'Any');
+            if (node.subtype === 'lead_unprocessed') return (c.timeLimit || '1') + ' ' + (c.timeUnit || 'hours');
+            if (node.subtype === 'activity_overdue') return c.activityType || 'Any type';
             return 'Source: ' + (c.source || 'Any');
         }
         if (node.subtype === 'send_email') return c.template ? '📄 ' + c.template : 'No template';

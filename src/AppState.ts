@@ -51,6 +51,20 @@ interface NodeConfig {
     // update_lead / update_client
     leadField?: string;
     clientField?: string;
+    // trigger-specific
+    daysLeft?: string;
+    department?: string;
+    plan?: string;
+    channel?: string;
+    outcome?: string;
+    minAmount?: string;
+    clientStatus?: string;
+    stuckDays?: string;
+    touchDays?: string;
+    fromPipeline?: string;
+    toPipeline?: string;
+    timeLimit?: string;
+    timeUnit?: string;
 }
 
 interface FlowNode {

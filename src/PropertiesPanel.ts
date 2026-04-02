@@ -102,6 +102,104 @@ class PropertiesPanel {
                     ).join('') +
                     '</div></div>';
             }
+            if (node.subtype === 'activity_created' || node.subtype === 'activity_overdue') {
+                html += '<div class="prop-group"><div class="prop-label">Activity Type</div>' +
+                    this.buildSelect(['Any type', 'Call', 'Meeting', 'Email', 'Task'], c.activityType || 'Any type', id, 'activityType') +
+                    '</div>';
+            }
+            if (node.subtype === 'lead_assigned' || node.subtype === 'client_assigned') {
+                html += '<div class="prop-group"><div class="prop-label">Assignee</div>' +
+                    this.buildSelect(['Any manager', 'Account owner', 'John Smith', 'Maria Garcia'], c.assignee || 'Any manager', id, 'assignee') +
+                    '</div>';
+            }
+            if (node.subtype === 'deal_assigned' || node.subtype === 'deal_created') {
+                html += '<div class="prop-group"><div class="prop-label">Pipeline</div>' +
+                    this.buildSelect(['Any pipeline', 'Main Pipeline', 'Enterprise', 'SMB', 'Partner'], c.pipeline || 'Any pipeline', id, 'pipeline') +
+                    '</div>';
+            }
+            if (node.subtype === 'trial_expiring') {
+                html += '<div class="prop-group"><div class="prop-label">Days Before Expiry</div>' +
+                    this.buildSelect(['1', '3', '7', '14', '30'], c.daysLeft || '7', id, 'daysLeft') +
+                    '</div>';
+            }
+            if (node.subtype === 'manager_leaving') {
+                html += '<div class="prop-group"><div class="prop-label">Department</div>' +
+                    this.buildSelect(['Any department', 'Sales', 'Support', 'Marketing', 'Account Management'], c.department || 'Any department', id, 'department') +
+                    '</div>';
+            }
+            if (node.subtype === 'subscription_cancelled') {
+                html += '<div class="prop-group"><div class="prop-label">Plan</div>' +
+                    this.buildSelect(['Any plan', 'Basic', 'Pro', 'Enterprise'], c.plan || 'Any plan', id, 'plan') +
+                    '</div>';
+            }
+            if (node.subtype === 'lead_wrote' || node.subtype === 'lead_messaged') {
+                html += '<div class="prop-group"><div class="prop-label">Channel</div>' +
+                    this.buildSelect(['Any channel', 'Email', 'Chat', 'SMS', 'WhatsApp'], c.channel || 'Any channel', id, 'channel') +
+                    '</div>';
+            }
+            if (node.subtype === 'contact_created') {
+                html += '<div class="prop-group"><div class="prop-label">Source</div>' +
+                    this.buildSelect(['Any source', 'Website', 'Social', 'Referral', 'Ad Campaign', 'Manual'], c.source || 'Any source', id, 'source') +
+                    '</div>';
+            }
+            if (node.subtype === 'call_ended') {
+                html += '<div class="prop-group"><div class="prop-label">Outcome</div>' +
+                    this.buildSelect(['Any outcome', 'Answered', 'No answer', 'Busy', 'Voicemail'], c.outcome || 'Any outcome', id, 'outcome') +
+                    '</div>';
+            }
+            if (node.subtype === 'order_paid') {
+                html += '<div class="prop-group"><div class="prop-label">Minimum Amount</div>' +
+                    this.buildInput(c.minAmount, 'e.g. 100', id, 'minAmount') +
+                    '</div>' +
+                    '<div class="prop-group"><div class="prop-label">Plan / Product</div>' +
+                    this.buildSelect(['Any', 'Basic', 'Pro', 'Enterprise', 'Add-on'], c.plan || 'Any', id, 'plan') +
+                    '</div>';
+            }
+            if (node.subtype === 'deal_stage_changed') {
+                html += '<div class="prop-group"><div class="prop-label">Pipeline</div>' +
+                    this.buildSelect(['Any pipeline', 'Main Pipeline', 'Enterprise', 'SMB', 'Partner'], c.pipeline || 'Any pipeline', id, 'pipeline') +
+                    '</div>' +
+                    '<div class="prop-group"><div class="prop-label">From Stage</div>' +
+                    this.buildSelect(['Any', 'New', 'Contacted', 'Proposal', 'Negotiation'], c.fromStage || 'Any', id, 'fromStage') +
+                    '</div>' +
+                    '<div class="prop-group"><div class="prop-label">To Stage</div>' +
+                    this.buildSelect(['Any', 'Contacted', 'Proposal', 'Negotiation', 'Won', 'Lost'], c.toStage || 'Any', id, 'toStage') +
+                    '</div>';
+            }
+            if (node.subtype === 'client_status_stuck') {
+                html += '<div class="prop-group"><div class="prop-label">Status</div>' +
+                    this.buildSelect(['Any', 'Active', 'Trial', 'Churned', 'Onboarding'], c.clientStatus || 'Any', id, 'clientStatus') +
+                    '</div>' +
+                    '<div class="prop-group"><div class="prop-label">Stuck For (days)</div>' +
+                    this.buildInput(c.stuckDays, 'e.g. 7', id, 'stuckDays') +
+                    '</div>';
+            }
+            if (node.subtype === 'touch_reminder') {
+                html += '<div class="prop-group"><div class="prop-label">No Touch For (days)</div>' +
+                    this.buildSelect(['7', '14', '30', '60', '90'], c.touchDays || '30', id, 'touchDays') +
+                    '</div>';
+            }
+            if (node.subtype === 'account_expiring') {
+                html += '<div class="prop-group"><div class="prop-label">Days Before Expiry</div>' +
+                    this.buildSelect(['7', '14', '30', '45', '60'], c.daysLeft || '60', id, 'daysLeft') +
+                    '</div>';
+            }
+            if (node.subtype === 'client_pipeline_change') {
+                html += '<div class="prop-group"><div class="prop-label">From Pipeline</div>' +
+                    this.buildSelect(['Any', 'Main Pipeline', 'Enterprise', 'SMB', 'Partner'], c.fromPipeline || 'Any', id, 'fromPipeline') +
+                    '</div>' +
+                    '<div class="prop-group"><div class="prop-label">To Pipeline</div>' +
+                    this.buildSelect(['Any', 'Main Pipeline', 'Enterprise', 'SMB', 'Partner'], c.toPipeline || 'Any', id, 'toPipeline') +
+                    '</div>';
+            }
+            if (node.subtype === 'lead_unprocessed') {
+                html += '<div class="prop-group"><div class="prop-label">Time Without Processing</div>' +
+                    '<div style="display:flex;gap:8px">' +
+                    '<input class="prop-input" type="number" value="' + (c.timeLimit || '1') + '" min="1" style="width:70px"' +
+                    ' oninput="updateConfigSilent(\'' + id + '\',\'timeLimit\',this.value)" />' +
+                    this.buildSelect(['minutes', 'hours', 'days'], c.timeUnit || 'hours', id, 'timeUnit') +
+                    '</div></div>';
+            }
         }
 
         if (node.subtype === 'send_email') {

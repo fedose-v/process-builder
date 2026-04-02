@@ -1,0 +1,136 @@
+/* ── HISTORY PAGE ────────────────────────────────────────── */
+
+.home-page-header {
+  flex-wrap: wrap;
+  gap: 10px 14px;
+}
+
+.hist-filter {
+  margin-left: auto;
+}
+
+.hist-select {
+  height: 32px;
+  padding: 0 10px;
+  border-radius: 7px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 13px;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.hist-select:focus { border-color: var(--accent); }
+
+/* ── TABLE ───────────────────────────────────────────────── */
+.hist-table-wrap {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.hist-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.hist-table thead {
+  background: var(--surface-el);
+}
+
+.hist-table th {
+  padding: 10px 16px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+.hist-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+  color: var(--text-2);
+}
+
+.hist-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.hist-table tbody tr {
+  background: var(--surface);
+  transition: background 0.12s;
+}
+.hist-table tbody tr:hover { background: var(--surface-hov); }
+.hist-table tbody tr.row-err:hover { background: #ef444408; }
+
+/* ── COLUMNS ─────────────────────────────────────────────── */
+.col-wf     { width: 35%; }
+.col-date   { width: 130px; white-space: nowrap; }
+.col-dur    { width: 80px;  white-space: nowrap; font-variant-numeric: tabular-nums; }
+.col-status { width: 100px; }
+.col-err    { width: auto; }
+
+.hist-wf-link {
+  color: var(--text);
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 0.15s;
+}
+.hist-wf-link:hover { color: var(--accent); }
+
+/* ── STATUS BADGES ───────────────────────────────────────── */
+.run-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 20px;
+}
+
+.run-badge-ok {
+  background: #22c55e22;
+  color: #22c55e;
+  border: 1px solid #22c55e44;
+}
+.run-badge-ok::before { content: '✓'; }
+
+.run-badge-err {
+  background: #ef444418;
+  color: #ef4444;
+  border: 1px solid #ef444440;
+}
+.run-badge-err::before { content: '✕'; }
+
+/* ── ERROR DETAIL ────────────────────────────────────────── */
+.hist-error-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.hist-error-step {
+  font-size: 12px;
+  font-weight: 500;
+  color: #ef4444;
+}
+
+.hist-error-msg {
+  font-size: 11px;
+  color: var(--text-3);
+}
+
+/* ── MISC ────────────────────────────────────────────────── */
+.hist-load-err {
+  text-align: center;
+  color: var(--text-3);
+  padding: 40px !important;
+}

@@ -16,42 +16,6 @@ class HomePage {
         return new Date(iso).toLocaleDateString(undefined, {month: 'short', day: 'numeric', year: 'numeric'});
     }
 
-    private formatRunDate(iso: string): string {
-        const d = new Date(iso);
-        const day = String(d.getDate()).padStart(2, '0');
-        const month = d.toLocaleString('en', {month: 'short'});
-        const hh = String(d.getHours()).padStart(2, '0');
-        const mm = String(d.getMinutes()).padStart(2, '0');
-        return `${day} ${month} ${hh}:${mm}`;
-    }
-
-    private formatDuration(ms: number): string {
-        if (ms < 1000) return `${ms}ms`;
-        const s = ms / 1000;
-        return s % 1 === 0 ? `${s}s` : `${s.toFixed(1)}s`;
-    }
-
-    private renderRuns(runs: RunRecord[]): string {
-        if (runs.length === 0) {
-            return `<div class="wf-runs"><span class="wf-runs-empty">No runs yet</span></div>`;
-        }
-        const rows = runs.slice(0, 5).map(r => {
-            const isErr = r.status === 'error';
-            const statusIcon = isErr
-                ? `<span class="run-status-icon run-err" title="${this.escapeHtml(r.errorMessage ?? '')}">✕</span>`
-                : `<span class="run-status-icon run-ok">✓</span>`;
-            const errLabel = isErr && r.errorNodeLabel
-                ? `<span class="run-error-step">${this.escapeHtml(r.errorNodeLabel)}</span>`
-                : '';
-            return `<div class="run-row${isErr ? ' run-row-err' : ''}">
-              <span class="run-date">${this.formatRunDate(r.startedAt)}</span>
-              <span class="run-dur">${this.formatDuration(r.duration)}</span>
-              ${statusIcon}${errLabel}
-            </div>`;
-        }).join('');
-        return `<div class="wf-runs"><div class="wf-runs-label">Runs</div>${rows}</div>`;
-    }
-
     private escapeHtml(str: string): string {
         return str
             .replace(/&/g, '&amp;')
@@ -105,11 +69,9 @@ class HomePage {
           ${wf.active ? 'Active' : 'Inactive'}
         </span>
         <div class="wf-actions">
+          <a href="/workflow/history?workflow=${wf.id}" class="wf-btn">History</a>
           <button class="wf-btn wf-btn-delete" onclick="handleDelete('${wf.id}')">Delete</button>
         </div>
-      </div>
-      <div class="wf-runs-slot" id="runs-${wf.id}">
-        <div class="wf-runs"><span class="wf-runs-empty">Loading runs…</span></div>
       </div>
     </div>
   `).join('');
@@ -119,28 +81,12 @@ class HomePage {
         try {
             const res = await fetch('/api/workflows');
             const workflows = (await res.json()) as WorkflowSummary[];
-            const sorted = workflows.slice().sort(
+            this.render(workflows.slice().sort(
                 (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
-            );
-            this.render(sorted);
-            void this.fetchAllRuns(sorted.map(w => w.id));
+            ));
         } catch {
             this.showToast('⚠ Failed to load workflows');
         }
-    }
-
-    private async fetchAllRuns(ids: string[]): Promise<void> {
-        await Promise.all(ids.map(async id => {
-            try {
-                const res = await fetch(`/api/workflows/${id}/runs`);
-                const runs = (await res.json()) as RunRecord[];
-                const slot = document.getElementById(`runs-${id}`);
-                if (slot) slot.innerHTML = this.renderRuns(runs);
-            } catch {
-                const slot = document.getElementById(`runs-${id}`);
-                if (slot) slot.innerHTML = '';
-            }
-        }));
     }
 
     handleDelete(id: string): void {

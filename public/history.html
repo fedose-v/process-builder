@@ -3,8 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CRM Flow — Workflows</title>
+  <title>CRM Flow — Run History</title>
   <link rel="stylesheet" href="/css/home.css">
+  <link rel="stylesheet" href="/css/history.css">
   <script>(function(){if(localStorage.getItem('theme')==='light')document.documentElement.classList.add('light');})()</script>
 </head>
 <body>
@@ -12,7 +13,7 @@
   <header class="home-header">
     <a href="/" class="home-logo">CRM Flow</a>
     <div class="home-header-right">
-      <a href="/workflow/history" class="home-nav-link">History</a>
+      <a href="/workflow/history" class="home-nav-link home-nav-link--active">History</a>
       <button class="home-theme-btn" id="themeToggle" onclick="toggleTheme()" title="Toggle theme">
         <svg id="themeIcon" width="16" height="16" viewBox="0 0 24 24" fill="none"
              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -32,25 +33,38 @@
 
   <main class="home-main">
     <div class="home-page-header">
-      <h1 class="home-title">Workflows</h1>
-      <span class="home-subtitle" id="workflowCount"></span>
+      <h1 class="home-title">Run History</h1>
+      <span class="home-subtitle" id="runCount"></span>
+      <div class="hist-filter">
+        <select id="wfFilter" class="hist-select">
+          <option value="">All workflows</option>
+        </select>
+      </div>
     </div>
 
-    <div id="workflowGrid" class="wf-grid"></div>
+    <div id="runsTable" class="hist-table-wrap">
+      <table class="hist-table">
+        <thead>
+          <tr>
+            <th class="col-wf">Workflow</th>
+            <th class="col-date">Started</th>
+            <th class="col-dur">Duration</th>
+            <th class="col-status">Status</th>
+            <th class="col-err">Error</th>
+          </tr>
+        </thead>
+        <tbody id="runsBody"></tbody>
+      </table>
+    </div>
 
     <div id="emptyState" class="wf-empty" style="display:none">
-      <div class="wf-empty-icon">⚡</div>
-      <div class="wf-empty-title">No workflows yet</div>
-      <div class="wf-empty-desc">
-        Create your first workflow to automate your CRM processes.
-      </div>
-      <a href="/builder" class="home-new-btn">Create Workflow</a>
+      <div class="wf-empty-icon">📋</div>
+      <div class="wf-empty-title">No runs found</div>
+      <div class="wf-empty-desc">No workflows have been executed yet.</div>
     </div>
   </main>
 
-  <div class="toast" id="toast"></div>
-
   <script src="/js/ThemeManager.js"></script>
-  <script src="/js/HomePage.js"></script>
+  <script src="/js/HistoryPage.js"></script>
 </body>
 </html>

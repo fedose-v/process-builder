@@ -49,6 +49,9 @@ class WorkflowServer {
         this.app.get('/builder', (_req, res) => {
             res.sendFile(path_1.default.join(__dirname, 'public', 'builder.html'));
         });
+        this.app.get('/workflow/history', (_req, res) => {
+            res.sendFile(path_1.default.join(__dirname, 'public', 'history.html'));
+        });
         this.app.get('/api/workflows', (_req, res) => {
             res.json(this.load());
         });
@@ -109,6 +112,11 @@ class WorkflowServer {
         this.app.delete('/api/workflows/:id', (req, res) => {
             this.persist(this.load().filter(w => w.id !== req.params.id));
             res.json({ ok: true });
+        });
+        this.app.get('/api/runs', (_req, res) => {
+            const runs = this.loadRuns()
+                .sort((a, b) => new Date(b.startedAt).getTime() - new Date(a.startedAt).getTime());
+            res.json(runs);
         });
         this.app.get('/api/workflows/:id/runs', (req, res) => {
             const runs = this.loadRuns()
